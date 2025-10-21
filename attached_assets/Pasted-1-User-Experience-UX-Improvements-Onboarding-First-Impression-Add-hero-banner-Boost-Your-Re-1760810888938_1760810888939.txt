@@ -1,0 +1,119 @@
+1. User Experience (UX) Improvements
+
+Onboarding & First Impression: Add hero banner: “Boost Your Reels Instantly – 100% Real Views”
+
+Quick tooltip walkthrough for first-time users explaining “How to place an order”
+
+Show live example: “This reel got 10K views in 2 hours”
+
+Order Flow (Step-by-Step):
+
+Select platform (Instagram / YouTube / etc.)
+
+Choose service & quantity
+
+Paste link
+
+Confirm & pay
+
+Show dynamic price preview before submit + real-time URL validation
+
+Wallet & Payment: Users top-up wallet via UPI manual flow; show balance & transaction history
+
+Provide instant refund / cancel order option
+
+Mobile Optimization: Big buttons, easy-to-fill forms, no horizontal scrolling; sticky header / quick action bar for “Place Order” & “Support”
+
+Trust Signals: Testimonials, orders delivered counter, secure payment badges, FAQ section
+
+2. User Interface (UI) / Design Enhancements
+
+Branding: Logo + color palette
+
+Primary: Electric Violet (#7C3AED)
+
+Accent: Neon Green (#00FF88)
+
+Dark: #0F0F0F
+
+Light: #F5F5F5
+
+Typography: Headings - Poppins Bold; Body - Inter Regular
+
+Dashboard & Services Layout: Cards for each service showing name, price per 1K, ETA, icon; feature top services on homepage
+
+Sorting & filters (Price, Delivery Speed, Platform)
+
+Micro-animations: hover, pressed state, success animations for order submission; progress bars/loaders
+
+Visual Metrics: Graphs/charts for views delivered, wallet trends, top services
+
+3. Backend / Technical Enhancements
+
+Database: PostgreSQL or MongoDB; index services, users, orders for fast queries
+
+API Integration: Reliable SMM supplier APIs; error handling, retries, rate-limiting
+
+Security: HTTPS/SSL, secure JWT sessions, input validation, upload sanitization, optional 2FA for admin
+
+Admin Tools: Manage users, services, orders, wallet transactions; add/edit/delete services, update prices
+
+Notifications: Email + WhatsApp Cloud API; optional Telegram bot
+
+Storage: Firebase Storage / AWS S3 for user uploads; secure signed URLs
+
+Logging & Monitoring: Server logs, Sentry for error monitoring, uptime checks
+
+4. Payment System — UPI Manual Flow
+
+Overview: Replace previous automatic PG integration for MVP. Implement UPI manual payment flow with automated logging to Google Sheets.
+
+Flow Steps (MVP):
+
+User places order (must be signed in via Google OAuth)
+
+System shows order summary + auto-calculated amount + UPI QR & UPI ID
+
+User pays via UPI and uploads payment screenshot or enters UTR/Transaction ID
+
+Order + payment proof auto-logged to Google Sheet (OrderID, UserID, ServiceID, Quantity, Amount, UPI ID, Screenshot URL, UTR, Timestamp, Status=Pending)
+
+Admin gets instant WhatsApp notification and email with sheet link and payment screenshot
+
+Admin verifies payment manually → toggles order status: Processing / Rejected
+
+Payment rejected → admin marks Rejected, system credits wallet or refunds
+
+Tech Notes:
+
+Secure storage of payment screenshots (Firebase Storage/S3)
+
+Google Sheets as live operations dashboard
+
+Anti-fraud checks (duplicate UTR, image metadata)
+
+Phase-2: Razorpay/Cashfree automated integration
+
+5. Authentication — Google OAuth
+
+Google OAuth as primary signup/login (Firebase Auth / NextAuth)
+
+Store: Name, Email, Google UID, Profile Picture URL, email verification status
+
+Login required before placing orders; optionally allow browsing but block submission for guest users
+
+JWT tokens for session management
+
+Logout & Manage Account options in dashboard
+
+6. Growth & Marketing Features
+
+Referral / Affiliate system with wallet credits
+
+Reseller / Micro-influencer onboarding with optional KYC, custom markup, API keys
+
+Social proof: testimonials, orders delivered counter, case studies
+
+Content engine: Blog/Tips section, embedded Instagram feed
+
+Promotions & Offers: admin can create limited-time discounts & coupon codes
