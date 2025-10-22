@@ -109,22 +109,23 @@ export class MemoryStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const existingUser = this.users.get(userData.id);
+    const userId = userData.id || this.generateId();
+    const existingUser = this.users.get(userId);
     
     const user: User = {
-      id: userData.id,
-      email: userData.email || null,
-      firstName: userData.firstName || null,
-      lastName: userData.lastName || null,
-      profileImageUrl: userData.profileImageUrl || null,
+      id: userId,
+      email: userData.email ?? null,
+      firstName: userData.firstName ?? null,
+      lastName: userData.lastName ?? null,
+      profileImageUrl: userData.profileImageUrl ?? null,
       role: existingUser?.role || (this.users.size === 0 ? "admin" : "user"),
       walletBalance: existingUser?.walletBalance || "0.00",
       referralCode: existingUser?.referralCode || randomBytes(8).toString("hex").toUpperCase(),
-      referredBy: userData.referredBy || existingUser?.referredBy || null,
-      apiKey: existingUser?.apiKey || null,
-      apiKeyEnabled: existingUser?.apiKeyEnabled || 0,
-      resellerMarkup: existingUser?.resellerMarkup || "0.00",
-      totalEarnings: existingUser?.totalEarnings || "0.00",
+      referredBy: (userData.referredBy !== undefined ? userData.referredBy : existingUser?.referredBy) ?? null,
+      apiKey: existingUser?.apiKey ?? null,
+      apiKeyEnabled: existingUser?.apiKeyEnabled ?? 0,
+      resellerMarkup: existingUser?.resellerMarkup ?? "0.00",
+      totalEarnings: existingUser?.totalEarnings ?? "0.00",
       createdAt: existingUser?.createdAt || new Date(),
       updatedAt: new Date(),
     };
@@ -176,9 +177,15 @@ export class MemoryStorage implements IStorage {
   async createService(serviceData: InsertService): Promise<Service> {
     const service: Service = {
       id: this.generateId(),
-      ...serviceData,
+      platform: serviceData.platform,
+      name: serviceData.name,
+      description: serviceData.description ?? null,
+      pricePerThousand: serviceData.pricePerThousand,
+      minQuantity: serviceData.minQuantity ?? 100,
+      maxQuantity: serviceData.maxQuantity ?? 1000000,
+      eta: serviceData.eta ?? null,
       isActive: serviceData.isActive ?? 1,
-      supplierServiceId: serviceData.supplierServiceId || null,
+      supplierServiceId: serviceData.supplierServiceId ?? null,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -257,7 +264,8 @@ export class MemoryStorage implements IStorage {
     const transaction: Transaction = {
       id: this.generateId(),
       ...transactionData,
-      orderId: transactionData.orderId || null,
+      description: transactionData.description ?? null,
+      orderId: transactionData.orderId ?? null,
       createdAt: new Date(),
     };
     this.transactions.set(transaction.id, transaction);
