@@ -63,11 +63,10 @@ export const paymentProofStatusEnum = pgEnum("payment_proof_status", [
   "rejected",
 ]);
 
-// Users table (Extended for email/password auth + SMM Panel)
+// Users table (Extended for Replit Auth + SMM Panel)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: varchar("email").unique().notNull(),
-  password: varchar("password").notNull(),
+  email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
