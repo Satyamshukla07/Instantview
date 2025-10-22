@@ -23,6 +23,11 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
+**IMPORTANT for Local Development:**
+- **DO NOT** set `DATABASE_URL` in your `.env` file for local development
+- The app automatically uses in-memory storage when `DATABASE_URL` is not set
+- This ensures smooth local development without database setup
+
 **Note:** You don't need to configure anything for basic local development! The app will:
 - Use in-memory storage (no database required)
 - Auto-login as admin user (no Google OAuth setup needed)

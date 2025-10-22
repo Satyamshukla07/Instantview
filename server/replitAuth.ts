@@ -87,7 +87,7 @@ export async function setupAuth(app: Express) {
   passport.serializeUser((user: any, cb) => cb(null, user));
   passport.deserializeUser((user: any, cb) => cb(null, user));
 
-  app.get("/api/login", (req, res, next) => {
+  app.get("/api/login", async (req, res, next) => {
     if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       passport.authenticate(`google:${req.hostname}`, {
         scope: ["profile", "email"],
@@ -100,10 +100,24 @@ export async function setupAuth(app: Express) {
         firstName: "Admin",
         lastName: "User",
       };
-      req.login(devUser, (err) => {
-        if (err) return res.status(500).json({ message: "Login failed" });
-        res.redirect("/");
-      });
+      
+      try {
+        // Ensure user exists in storage (both memory and database)
+        await storage.upsertUser({
+          id: devUser.id,
+          email: devUser.email,
+          firstName: devUser.firstName,
+          lastName: devUser.lastName,
+        });
+        
+        req.login(devUser, (err) => {
+          if (err) return res.status(500).json({ message: "Login failed" });
+          res.redirect("/");
+        });
+      } catch (error) {
+        console.error("Error creating dev user:", error);
+        res.status(500).json({ message: "Login failed" });
+      }
     }
   });
 
