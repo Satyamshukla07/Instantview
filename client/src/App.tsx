@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 // Pages
 import Landing from "@/pages/landing";
+import Login from "@/pages/login";
 import Dashboard from "@/pages/dashboard";
 import Services from "@/pages/services";
 import Orders from "@/pages/orders";
@@ -27,7 +28,10 @@ function Router() {
   return (
     <Switch>
       {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/login" component={Login} />
+        </>
       ) : (
         <>
           <Route path="/" component={Dashboard} />

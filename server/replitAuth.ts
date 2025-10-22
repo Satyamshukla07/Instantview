@@ -1,5 +1,5 @@
 // Google OAuth authentication
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
@@ -68,7 +68,7 @@ export async function setupAuth(app: Express) {
         scope: ["profile", "email"],
         passReqToCallback: false,
       },
-      async (accessToken, refreshToken, profile, done) => {
+      async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
         try {
           await upsertUser(profile);
           const user = {

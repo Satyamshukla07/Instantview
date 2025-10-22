@@ -130,7 +130,7 @@ export default function Landing() {
           <div className="flex items-center gap-4">
             <ThemeToggle />
             <Button asChild data-testid="button-login">
-              <a href="/api/login">Sign In</a>
+              <a href="/login">Sign In</a>
             </Button>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function Landing() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild data-testid="button-get-started" className="text-lg px-8">
-                <a href="/api/login">Get Started Free</a>
+                <a href="/login">Get Started Free</a>
               </Button>
               <Button size="lg" variant="outline" asChild className="text-lg px-8">
                 <a href="#features">Learn More</a>
@@ -329,7 +329,7 @@ export default function Landing() {
               Join thousands of satisfied customers and start growing your presence today
             </p>
             <Button size="lg" asChild data-testid="button-cta-start" className="text-lg px-8">
-              <a href="/api/login">Start Now - It's Free</a>
+              <a href="/login">Start Now - It's Free</a>
             </Button>
             <p className="text-sm text-muted-foreground">
               <CheckCircle className="h-4 w-4 inline mr-1" />
