@@ -1,8 +1,11 @@
-// Google OAuth authentication
-import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
+// Referenced from javascript_log_in_with_replit blueprint
+import * as client from "openid-client";
+import { Strategy, type VerifyFunction } from "openid-client/passport";
+
 import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
+import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
@@ -10,9 +13,15 @@ if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
 
-if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-  throw new Error("Google OAuth credentials not provided");
-}
+const getOidcConfig = memoize(
+  async () => {
+    return await client.discovery(
+      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
+      process.env.REPL_ID!
+    );
+  },
+  { maxAge: 3600 * 1000 }
+);
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
@@ -36,19 +45,25 @@ export function getSession() {
   });
 }
 
-async function upsertUser(profile: any) {
-  const userId = profile.id;
-  const email = profile.emails?.[0]?.value || "";
-  const firstName = profile.name?.givenName || "";
-  const lastName = profile.name?.familyName || "";
-  const profileImageUrl = profile.photos?.[0]?.value || "";
+function updateUserSession(
+  user: any,
+  tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers
+) {
+  user.claims = tokens.claims();
+  user.access_token = tokens.access_token;
+  user.refresh_token = tokens.refresh_token;
+  user.expires_at = user.claims?.exp;
+}
 
+async function upsertUser(
+  claims: any,
+) {
   await storage.upsertUser({
-    id: userId,
-    email,
-    firstName,
-    lastName,
-    profileImageUrl,
+    id: claims["sub"],
+    email: claims["email"],
+    firstName: claims["first_name"],
+    lastName: claims["last_name"],
+    profileImageUrl: claims["profile_image_url"],
   });
 }
 
@@ -58,68 +73,93 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Configure Google OAuth strategy for each domain
-  for (const domain of process.env.REPLIT_DOMAINS!.split(",")) {
-    const strategy = new GoogleStrategy(
+  const config = await getOidcConfig();
+
+  const verify: VerifyFunction = async (
+    tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
+    verified: passport.AuthenticateCallback
+  ) => {
+    const user = {};
+    updateUserSession(user, tokens);
+    await upsertUser(tokens.claims());
+    verified(null, user);
+  };
+
+  for (const domain of process.env
+    .REPLIT_DOMAINS!.split(",")) {
+    const strategy = new Strategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID!,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        name: `replitauth:${domain}`,
+        config,
+        scope: "openid email profile offline_access",
         callbackURL: `https://${domain}/api/callback`,
-        scope: ["profile", "email"],
-        passReqToCallback: false,
       },
-      async (accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) => {
-        try {
-          await upsertUser(profile);
-          const user = {
-            id: profile.id,
-            email: profile.emails?.[0]?.value,
-            firstName: profile.name?.givenName,
-            lastName: profile.name?.familyName,
-            profileImageUrl: profile.photos?.[0]?.value,
-          };
-          done(null, user);
-        } catch (error) {
-          done(error as Error);
-        }
-      }
+      verify,
     );
-    passport.use(`google:${domain}`, strategy);
+    passport.use(strategy);
   }
 
-  passport.serializeUser((user: any, cb) => cb(null, user));
-  passport.deserializeUser((user: any, cb) => cb(null, user));
+  passport.serializeUser((user: Express.User, cb) => cb(null, user));
+  passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`google:${req.hostname}`, {
-      scope: ["profile", "email"],
+    passport.authenticate(`replitauth:${req.hostname}`, {
+      prompt: "login consent",
+      scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`google:${req.hostname}`, {
-      successRedirect: "/",
+    passport.authenticate(`replitauth:${req.hostname}`, {
+      successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);
   });
 
   app.get("/api/logout", (req, res) => {
     req.logout(() => {
-      res.redirect("/");
+      res.redirect(
+        client.buildEndSessionUrl(config, {
+          client_id: process.env.REPL_ID!,
+          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+        }).href
+      );
     });
   });
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  if (!req.isAuthenticated()) {
+  const user = req.user as any;
+
+  if (!req.isAuthenticated() || !user.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  next();
+
+  const now = Math.floor(Date.now() / 1000);
+  if (now <= user.expires_at) {
+    return next();
+  }
+
+  const refreshToken = user.refresh_token;
+  if (!refreshToken) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  try {
+    const config = await getOidcConfig();
+    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+    updateUserSession(user, tokenResponse);
+    return next();
+  } catch (error) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
 };
 
 // Admin-only middleware
 export const isAdmin: RequestHandler = async (req, res, next) => {
-  const userId = (req.user as any)?.id;
+  const userId = (req.user as any)?.claims?.sub;
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
