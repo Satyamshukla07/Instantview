@@ -22,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ===== AUTH ROUTES =====
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       res.json(user);
     } catch (error) {
@@ -61,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's orders
   app.get("/api/orders", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orders = await storage.getOrders(userId);
       res.json(orders);
     } catch (error) {
@@ -73,7 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent orders
   app.get("/api/orders/recent", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orders = await storage.getRecentOrders(userId, 10);
       res.json(orders);
     } catch (error) {
@@ -85,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create order
   app.post("/api/orders", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { serviceId, targetLink, quantity } = req.body;
 
       // Validate inputs
@@ -154,7 +154,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user transactions
   app.get("/api/transactions", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const transactions = await storage.getTransactions(userId);
       res.json(transactions);
     } catch (error) {
@@ -166,7 +166,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Submit UPI payment proof
   app.post("/api/wallet/submit-payment-proof", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const { amount, utrNumber, screenshotUrl } = req.body;
 
       if (!amount || amount <= 0) {
@@ -198,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's payment proofs
   app.get("/api/wallet/payment-proofs", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const proofs = await storage.getPaymentProofs(userId);
       res.json(proofs);
     } catch (error) {
@@ -211,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user referrals
   app.get("/api/referrals", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const referrals = await storage.getReferrals(userId);
       res.json(referrals);
     } catch (error) {
@@ -223,7 +223,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user analytics
   app.get("/api/analytics/user", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const [orders, transactions, allServices] = await Promise.all([
         storage.getOrders(userId),
         storage.getTransactions(userId),
