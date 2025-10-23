@@ -18,6 +18,7 @@ import {
 import { Link } from "wouter";
 import type { Order } from "@shared/schema";
 import { useAuth } from "@/hooks/useAuth";
+import { motion } from "framer-motion";
 
 interface UserAnalytics {
   totalOrders: number;
@@ -129,20 +130,27 @@ export default function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title} data-testid={stat.testId}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">{stat.title}</p>
-                  <p className="text-2xl font-semibold">{stat.value}</p>
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+          >
+            <Card data-testid={stat.testId} className="hover:shadow-lg transition-shadow duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">{stat.title}</p>
+                    <p className="text-2xl font-semibold">{stat.value}</p>
+                  </div>
+                  <div className={`w-12 h-12 rounded-md ${stat.bgColor} flex items-center justify-center`}>
+                    <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
+                  </div>
                 </div>
-                <div className={`w-12 h-12 rounded-md ${stat.bgColor} flex items-center justify-center`}>
-                  <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 

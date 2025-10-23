@@ -16,6 +16,7 @@ import {
 import { Instagram, Youtube, Facebook, Twitter, Send, Search, SlidersHorizontal } from "lucide-react";
 import type { Service } from "@shared/schema";
 import { OrderForm } from "@/components/order-form";
+import { motion } from "framer-motion";
 
 const platformIcons: Record<string, any> = {
   instagram: Instagram,
@@ -171,10 +172,16 @@ export default function Services() {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredServices.map((service) => {
+                {filteredServices.map((service, index) => {
                   const PlatformIcon = platformIcons[service.platform];
                   return (
-                    <Card key={service.id} className="hover-elevate" data-testid={`service-card-${service.id}`}>
+                    <motion.div
+                      key={service.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                    >
+                      <Card className="hover-elevate hover:shadow-xl transition-all duration-300" data-testid={`service-card-${service.id}`}>
                       <CardHeader className="pb-4">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-3">
@@ -222,7 +229,8 @@ export default function Services() {
                           Order Now
                         </Button>
                       </CardContent>
-                    </Card>
+                      </Card>
+                    </motion.div>
                   );
                 })}
               </div>
