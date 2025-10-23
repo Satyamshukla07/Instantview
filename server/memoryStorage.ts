@@ -127,7 +127,7 @@ export class MemoryStorage implements IStorage {
       firstName: userData.firstName ?? null,
       lastName: userData.lastName ?? null,
       profileImageUrl: userData.profileImageUrl ?? null,
-      role: existingUser?.role || (this.users.size === 0 ? "admin" : "user"),
+      role: existingUser?.role || "user",
       walletBalance: existingUser?.walletBalance || "0.00",
       referralCode: existingUser?.referralCode || randomBytes(8).toString("hex").toUpperCase(),
       referredBy: (userData.referredBy !== undefined ? userData.referredBy : existingUser?.referredBy) ?? null,
