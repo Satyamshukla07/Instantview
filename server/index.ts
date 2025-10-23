@@ -60,12 +60,37 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 5000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
-})();
+   const port = Number(process.env.PORT) || 5000;
+  const host = process.env.REPLIT_DOMAINS ? "0.0.0.0" : "127.0.0.1";
+
+  server
+    .listen(
+      {
+        port,
+        host,
+      },
+      () => {
+        log(`✅ Server running at http://${host}:${port}`);
+      }
+    )
+    .on("error", (e: NodeJS.ErrnoException) => {
+      if (e.code === "EADDRINUSE" || e.code === "ENOTSUP") {
+        log(`⚠️ Port ${port} is busy or not supported, trying another...`);
+        server.listen(
+          {
+            port: 0,
+            host,
+          },
+          () => {
+            const addr = server.address();
+            const actualPort =
+              typeof addr === "object" && addr ? addr.port : port;
+            log(`✅ Server now running at http://${host}:${actualPort}`);
+          }
+        );
+      } else {
+        throw e;
+      }
+    });
+})(); // 👈 make sure this closing line is present!
+
