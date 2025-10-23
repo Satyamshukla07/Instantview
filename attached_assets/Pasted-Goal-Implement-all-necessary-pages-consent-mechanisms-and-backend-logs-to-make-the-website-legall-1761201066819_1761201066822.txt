@@ -1,0 +1,128 @@
+Goal: Implement all necessary pages, consent mechanisms, and backend logs to make the website legally compliant under Indian IT Act, Data Privacy, GST, and platform ToS.
+
+Tasks & Implementation Details:
+
+1️⃣ Website Pages (create and link in footer & checkout)
+
+Create the following static pages (each with unique slug and meta description):
+
+/privacy-policy
+
+/refund-policy
+
+/disclaimer
+
+/terms-of-service
+
+/contact-us
+
+
+Content requirement:
+Use business-neutral, India-compliant wording. Do not mention or use logos of “Instagram”, “Meta”, “YouTube”, “TikTok”.
+Replace “Buy Followers / Views” phrases with “Social Media Exposure / Marketing Services”.
+
+2️⃣ Checkout Page
+
+Add mandatory checkbox above “Pay Now” button:
+
+[ ] I have read and agree to the Terms of Service, Privacy Policy, and Refund Policy.
+
+Ensure required attribute is enforced in HTML/JS so payment can’t proceed without consent.
+
+Add hyperlinks to the policy pages in the checkbox text.
+
+Log user IP + timestamp + consent flag in database (e.g. consent_log table).
+
+Fields: user_id, ip_address, datetime, consent_version (for version control).
+
+
+
+3️⃣ Security & Privacy
+
+Force HTTPS (SSL) for all pages.
+
+Add cookie notice if analytics or tracking scripts are used.
+
+Store customer name, email, and payment data only for order processing; mask sensitive fields.
+
+Disable public exposure of user data through APIs or search engines (use robots.txt + noindex meta).
+
+
+4️⃣ Payment Gateway Compliance
+
+Add “Refund & Refill Policy” and “Privacy Policy” URLs in dashboard (required).
+
+5️⃣ Branding & Legal Safety
+
+Remove any references to “Instagram”, “Meta”, or other brand names/logos.
+
+Replace with neutral icons or SVG placeholders (e.g., “social” icon set).
+
+Footer text:
+
+© [Year] [Brand Name]. All rights reserved. 
+We provide independent digital marketing and social exposure services.
+Not affiliated with Instagram™, Meta™, or YouTube™.
+
+Display “Digital Marketing Services (MSME Reg. No. XXXXX)” under the footer.
+
+
+6️⃣ Data & Fraud Protection
+
+Maintain secure backend logs for every order:
+
+Fields: order_id, service_type, quantity, cost_price, sale_price, delivery_status, timestamp.
+
+
+Generate downloadable monthly CSV for accounting (to support ITR/GST filing).
+
+Implement admin panel filter for refunds and refill requests.
+
+
+7️⃣ UI/UX Requirements
+
+Footer should have visible links: Privacy Policy, Refund Policy, Disclaimer, Terms of Service, Contact Us.
+
+Use responsive layout (mobile-friendly).
+
+Keep professional color palette (avoid platform-specific colors).
+
+Optional: add “Support Chat / Email” section linking to support@yourdomain.com.
+
+
+8️⃣ Future Expansion (Optional)
+
+Add version tracking for policy updates (e.g., v1.0, v1.1).
+
+Implement admin notifications when new ToS is accepted.
+
+Setup sitemap.xml including all legal pages for indexing.
+
+
+Deliverables:
+
+1. All five legal pages live & linked
+
+
+2. Consent checkbox functional and recorded in database.
+3. Footer redesign with compliance links
+
+
+4. Secure HTTPS + cookie notice
+
+
+
+
+Reference Compliance:
+
+Indian IT Act 2000 & SPDI Rules 2011
+
+Consumer Protection (E-commerce) Rules 2020
+
+RBI Payment Data Storage Guidelines
+
+
+Please ensure the final deployment is responsive, secure, and compliant with above directives.
+
+
+Also some pages are not working like manage users and etc

@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Instagram, 
-  Youtube, 
-  Facebook, 
-  Twitter, 
-  Send,
+  Share2,
+  Video,
+  MessageCircle,
+  Hash,
+  Globe,
   Zap,
   Shield,
   TrendingUp,
@@ -26,14 +26,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Footer } from "@/components/footer";
 
 export default function Landing() {
   const platforms = [
-    { icon: Instagram, name: "Instagram", color: "text-pink-500" },
-    { icon: Youtube, name: "YouTube", color: "text-red-500" },
-    { icon: Facebook, name: "Facebook", color: "text-blue-600" },
-    { icon: Twitter, name: "Twitter", color: "text-sky-500" },
-    { icon: Send, name: "Telegram", color: "text-blue-400" },
+    { icon: Share2, name: "Social Media", color: "text-pink-500" },
+    { icon: Video, name: "Video Platforms", color: "text-red-500" },
+    { icon: MessageCircle, name: "Messaging Apps", color: "text-blue-600" },
+    { icon: Hash, name: "Content Sharing", color: "text-sky-500" },
+    { icon: Globe, name: "Global Reach", color: "text-blue-400" },
   ];
 
   const features = [
@@ -77,7 +78,7 @@ export default function Landing() {
       name: "Rahul Verma",
       role: "Digital Marketer",
       image: "RV",
-      content: "Best SMM panel I've used. Fast delivery, great prices, and excellent customer support. Highly recommended!",
+      content: "Best digital marketing service I've used. Fast delivery, great prices, and excellent customer support. Highly recommended!",
       rating: 5
     },
     {
@@ -92,7 +93,7 @@ export default function Landing() {
   const faqs = [
     {
       question: "How to place an order?",
-      answer: "It's simple! Sign in, select your platform (Instagram, YouTube, etc.), choose the service you need, paste your content link, select quantity, and confirm payment. Orders start processing within minutes."
+      answer: "It's simple! Sign in, select your platform, choose the service you need, paste your content link, select quantity, and confirm payment. Orders start processing within minutes."
     },
     {
       question: "Is it safe to use?",
@@ -152,8 +153,8 @@ export default function Landing() {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Professional SMM panel for Instagram, YouTube, TikTok, and more. 
-              Get real views, likes, and followers with our automated, reliable service.
+              Professional digital marketing and social exposure services for all major platforms. 
+              Get real engagement with our automated, reliable service.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild data-testid="button-get-started" className="text-lg px-8">
@@ -340,19 +341,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 bg-card">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <div>© 2025 ReelBoost. All rights reserved.</div>
-            <div className="flex items-center gap-6">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-foreground transition-colors">Refund Policy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Contact Us</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -8,16 +8,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import type { Service } from "@shared/schema";
 import { Wallet, AlertCircle } from "lucide-react";
+import { Link } from "wouter";
 
 const orderSchema = z.object({
   targetLink: z.string().url("Please enter a valid URL"),
   quantity: z.number().min(1, "Quantity must be at least 1"),
+  consentAgreed: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the Terms of Service, Privacy Policy, and Refund Policy",
+  }),
 });
 
 type OrderFormData = z.infer<typeof orderSchema>;
@@ -38,14 +43,18 @@ export function OrderForm({ service, onSuccess }: OrderFormProps) {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<OrderFormData>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       targetLink: "",
       quantity: service.minQuantity,
+      consentAgreed: false,
     },
   });
+
+  const consentAgreed = watch("consentAgreed");
 
   // Calculate price whenever quantity changes
   useEffect(() => {
@@ -60,6 +69,7 @@ export function OrderForm({ service, onSuccess }: OrderFormProps) {
         serviceId: service.id,
         targetLink: data.targetLink,
         quantity: data.quantity,
+        consentAgreed: data.consentAgreed,
       });
       return response;
     },
@@ -197,12 +207,51 @@ export function OrderForm({ service, onSuccess }: OrderFormProps) {
         </Alert>
       )}
 
+      {/* Consent Checkbox */}
+      <div className="space-y-3 border-t pt-4">
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id="consent"
+            checked={consentAgreed}
+            onCheckedChange={(checked) => setValue("consentAgreed", checked as boolean)}
+            data-testid="checkbox-consent"
+            className="mt-1"
+          />
+          <div className="flex-1">
+            <Label htmlFor="consent" className="text-sm leading-relaxed cursor-pointer">
+              I have read and agree to the{" "}
+              <Link href="/terms-of-service">
+                <a className="text-primary hover:underline" target="_blank" data-testid="link-terms">
+                  Terms of Service
+                </a>
+              </Link>
+              ,{" "}
+              <Link href="/privacy-policy">
+                <a className="text-primary hover:underline" target="_blank" data-testid="link-privacy">
+                  Privacy Policy
+                </a>
+              </Link>
+              , and{" "}
+              <Link href="/refund-policy">
+                <a className="text-primary hover:underline" target="_blank" data-testid="link-refund">
+                  Refund Policy
+                </a>
+              </Link>
+              .
+            </Label>
+            {errors.consentAgreed && (
+              <p className="text-sm text-destructive mt-1">{errors.consentAgreed.message}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Submit Button */}
       <div className="flex gap-3">
         <Button
           type="submit"
           className="flex-1"
-          disabled={orderMutation.isPending || hasInsufficientFunds}
+          disabled={orderMutation.isPending || hasInsufficientFunds || !consentAgreed}
           data-testid="button-submit-order"
         >
           {orderMutation.isPending ? "Placing Order..." : "Place Order"}

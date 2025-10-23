@@ -1,0 +1,28 @@
+# ReelBoost Robots.txt
+# Compliance with SEO and privacy best practices
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /services
+Disallow: /orders
+Disallow: /wallet
+Disallow: /referrals
+Disallow: /api-docs
+Disallow: /dashboard
+
+# Legal pages are public
+Allow: /privacy-policy
+Allow: /refund-policy
+Allow: /disclaimer
+Allow: /terms-of-service
+Allow: /contact-us
+
+# Prevent indexing of user data
+Disallow: /api/auth/
+Disallow: /api/admin/
+Disallow: /api/reseller/
+
+# Sitemap (optional - can be added later)
+# Sitemap: https://reelboost.com/sitemap.xml

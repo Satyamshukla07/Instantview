@@ -86,11 +86,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/orders", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const { serviceId, targetLink, quantity } = req.body;
+      const { serviceId, targetLink, quantity, consentAgreed } = req.body;
 
       // Validate inputs
       if (!serviceId || !targetLink || !quantity) {
         return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Validate consent (required by Indian IT Act and Consumer Protection Act)
+      if (consentAgreed !== true) {
+        return res.status(400).json({ 
+          message: "You must agree to the Terms of Service, Privacy Policy, and Refund Policy to place an order" 
+        });
       }
 
       // Get service
@@ -140,6 +147,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         balanceBefore: user.walletBalance,
         balanceAfter: newBalance.toFixed(2),
         description: `Order #${order.id.slice(0, 8)} - ${service.name}`,
+        orderId: order.id,
+      });
+
+      // Log consent (required by Indian IT Act for order processing)
+      const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
+      await storage.createConsentLog({
+        userId,
+        ipAddress: typeof ipAddress === 'string' ? ipAddress.split(',')[0].trim() : ipAddress,
+        consentVersion: "v1.0",
         orderId: order.id,
       });
 

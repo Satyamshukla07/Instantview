@@ -12,6 +12,8 @@ import {
   type InsertReferral,
   type PaymentProof,
   type InsertPaymentProof,
+  type ConsentLog,
+  type InsertConsentLog,
 } from "@shared/schema";
 import { randomBytes } from "crypto";
 import type { IStorage } from "./storage";
@@ -23,6 +25,7 @@ export class MemoryStorage implements IStorage {
   private transactions = new Map<string, Transaction>();
   private referrals = new Map<string, Referral>();
   private paymentProofs = new Map<string, PaymentProof>();
+  private consentLogs = new Map<string, ConsentLog>();
 
   constructor() {
     // Seed with default admin user
@@ -335,5 +338,25 @@ export class MemoryStorage implements IStorage {
       proof.adminNotes = adminNotes || null;
       proof.updatedAt = new Date();
     }
+  }
+
+  // Consent log operations
+  async createConsentLog(logData: InsertConsentLog): Promise<ConsentLog> {
+    const log: ConsentLog = {
+      id: this.generateId(),
+      userId: logData.userId ?? null,
+      ipAddress: logData.ipAddress ?? null,
+      consentVersion: logData.consentVersion ?? "v1.0",
+      orderId: logData.orderId ?? null,
+      createdAt: new Date(),
+    };
+    this.consentLogs.set(log.id, log);
+    return log;
+  }
+
+  async getConsentLogs(userId: string): Promise<ConsentLog[]> {
+    return Array.from(this.consentLogs.values())
+      .filter(l => l.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 }

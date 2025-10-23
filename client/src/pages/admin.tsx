@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, TrendingUp, DollarSign, Package, AlertCircle, CheckCircle, XCircle, Eye, Plus } from "lucide-react";
-import type { PaymentProof, Service, Order } from "@shared/schema";
+import type { PaymentProof, Service, Order, User } from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertServiceSchema } from "@shared/schema";
@@ -76,6 +76,7 @@ export default function AdminPage() {
       <Tabs defaultValue="analytics" className="space-y-6">
         <TabsList>
           <TabsTrigger value="analytics" data-testid="tab-analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
           <TabsTrigger value="payment-proofs" data-testid="tab-payment-proofs">Payment Proofs</TabsTrigger>
           <TabsTrigger value="services" data-testid="tab-services">Services</TabsTrigger>
           <TabsTrigger value="orders" data-testid="tab-orders">Orders</TabsTrigger>
@@ -83,6 +84,10 @@ export default function AdminPage() {
 
         <TabsContent value="analytics">
           <AnalyticsTab />
+        </TabsContent>
+
+        <TabsContent value="users">
+          <UsersTab />
         </TabsContent>
 
         <TabsContent value="payment-proofs">
@@ -646,6 +651,69 @@ function ServicesTab({
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function UsersTab() {
+  const { data: users, isLoading } = useQuery<User[]>({
+    queryKey: ["/api/admin/users"],
+  });
+
+  if (isLoading) {
+    return <div>Loading users...</div>;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>All Users</CardTitle>
+        <CardDescription>View and manage platform users</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>User</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Wallet Balance</TableHead>
+              <TableHead>Referral Code</TableHead>
+              <TableHead>Joined</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users?.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold">
+                      {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                    </div>
+                    <div>
+                      <div>{user.firstName} {user.lastName}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{user.id.slice(0, 8)}...</div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>
+                  <Badge variant={
+                    user.role === "admin" ? "default" :
+                    user.role === "reseller" ? "secondary" :
+                    "outline"
+                  }>
+                    {user.role}
+                  </Badge>
+                </TableCell>
+                <TableCell className="font-semibold">₹{user.walletBalance}</TableCell>
+                <TableCell className="font-mono text-xs">{user.referralCode || "N/A"}</TableCell>
+                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
 

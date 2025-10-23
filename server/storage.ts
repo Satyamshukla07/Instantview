@@ -6,6 +6,7 @@ import {
   transactions,
   referrals,
   paymentProofs,
+  consentLogs,
   type User,
   type UpsertUser,
   type Service,
@@ -18,6 +19,8 @@ import {
   type InsertReferral,
   type PaymentProof,
   type InsertPaymentProof,
+  type ConsentLog,
+  type InsertConsentLog,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -62,6 +65,10 @@ export interface IStorage {
   getPaymentProof(id: string): Promise<PaymentProof | undefined>;
   createPaymentProof(proof: InsertPaymentProof): Promise<PaymentProof>;
   updatePaymentProofStatus(id: string, status: string, adminNotes?: string): Promise<void>;
+  
+  // Consent log operations
+  createConsentLog(log: InsertConsentLog): Promise<ConsentLog>;
+  getConsentLogs(userId: string): Promise<ConsentLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -255,6 +262,20 @@ export class DatabaseStorage implements IStorage {
         updatedAt: new Date() 
       })
       .where(eq(paymentProofs.id, id));
+  }
+
+  // Consent log operations
+  async createConsentLog(logData: InsertConsentLog): Promise<ConsentLog> {
+    const [log] = await db.insert(consentLogs).values(logData).returning();
+    return log;
+  }
+
+  async getConsentLogs(userId: string): Promise<ConsentLog[]> {
+    return await db
+      .select()
+      .from(consentLogs)
+      .where(eq(consentLogs.userId, userId))
+      .orderBy(desc(consentLogs.createdAt));
   }
 }
 

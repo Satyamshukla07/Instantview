@@ -174,6 +174,23 @@ export const paymentProofs = pgTable(
   ]
 );
 
+// Consent logs table (for legal compliance tracking)
+export const consentLogs = pgTable(
+  "consent_logs",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    userId: varchar("user_id").references(() => users.id),
+    ipAddress: varchar("ip_address", { length: 45 }),
+    consentVersion: varchar("consent_version", { length: 20 }).default("v1.0").notNull(),
+    orderId: varchar("order_id").references(() => orders.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("idx_consent_logs_user_id").on(table.userId),
+    index("idx_consent_logs_order_id").on(table.orderId),
+  ]
+);
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
@@ -226,6 +243,17 @@ export const paymentProofsRelations = relations(paymentProofs, ({ one }) => ({
   }),
 }));
 
+export const consentLogsRelations = relations(consentLogs, ({ one }) => ({
+  user: one(users, {
+    fields: [consentLogs.userId],
+    references: [users.id],
+  }),
+  order: one(orders, {
+    fields: [consentLogs.orderId],
+    references: [orders.id],
+  }),
+}));
+
 // Zod schemas for validation
 export const upsertUserSchema = createInsertSchema(users);
 export const insertServiceSchema = createInsertSchema(services).omit({ id: true, createdAt: true, updatedAt: true });
@@ -233,6 +261,7 @@ export const insertOrderSchema = createInsertSchema(orders).omit({ id: true, cre
 export const insertTransactionSchema = createInsertSchema(transactions).omit({ id: true, createdAt: true });
 export const insertReferralSchema = createInsertSchema(referrals).omit({ id: true, createdAt: true });
 export const insertPaymentProofSchema = createInsertSchema(paymentProofs).omit({ id: true, createdAt: true, updatedAt: true, status: true });
+export const insertConsentLogSchema = createInsertSchema(consentLogs).omit({ id: true, createdAt: true });
 
 // TypeScript types
 export type User = typeof users.$inferSelect;
@@ -247,3 +276,5 @@ export type Referral = typeof referrals.$inferSelect;
 export type InsertReferral = z.infer<typeof insertReferralSchema>;
 export type PaymentProof = typeof paymentProofs.$inferSelect;
 export type InsertPaymentProof = z.infer<typeof insertPaymentProofSchema>;
+export type ConsentLog = typeof consentLogs.$inferSelect;
+export type InsertConsentLog = z.infer<typeof insertConsentLogSchema>;

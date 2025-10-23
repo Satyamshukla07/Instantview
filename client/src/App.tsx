@@ -21,6 +21,11 @@ import Referrals from "@/pages/referrals";
 import Admin from "@/pages/admin";
 import ApiDocs from "@/pages/api-docs";
 import NotFound from "@/pages/not-found";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import RefundPolicy from "@/pages/refund-policy";
+import Disclaimer from "@/pages/disclaimer";
+import TermsOfService from "@/pages/terms-of-service";
+import ContactUs from "@/pages/contact-us";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -31,6 +36,11 @@ function Router() {
         <>
           <Route path="/" component={Landing} />
           <Route path="/login" component={Login} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/refund-policy" component={RefundPolicy} />
+          <Route path="/disclaimer" component={Disclaimer} />
+          <Route path="/terms-of-service" component={TermsOfService} />
+          <Route path="/contact-us" component={ContactUs} />
         </>
       ) : (
         <>
@@ -41,6 +51,11 @@ function Router() {
           <Route path="/referrals" component={Referrals} />
           <Route path="/admin" component={Admin} />
           <Route path="/api-docs" component={ApiDocs} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/refund-policy" component={RefundPolicy} />
+          <Route path="/disclaimer" component={Disclaimer} />
+          <Route path="/terms-of-service" component={TermsOfService} />
+          <Route path="/contact-us" component={ContactUs} />
         </>
       )}
       <Route component={NotFound} />
