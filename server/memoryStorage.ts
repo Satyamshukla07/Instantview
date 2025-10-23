@@ -1,20 +1,22 @@
 // In-memory storage implementation for local development
-import {
-  type User,
-  type UpsertUser,
-  type Service,
-  type InsertService,
-  type Order,
-  type InsertOrder,
-  type Transaction,
-  type InsertTransaction,
-  type Referral,
-  type InsertReferral,
-  type PaymentProof,
-  type InsertPaymentProof,
-  type ConsentLog,
-  type InsertConsentLog,
+import type {
+  UpsertUser,
+  InsertService,
+  InsertOrder,
+  InsertTransaction,
+  InsertReferral,
+  InsertPaymentProof,
+  InsertConsentLog,
 } from "@shared/schema";
+import type {
+  User,
+  Service,
+  Order,
+  Transaction,
+  Referral,
+  PaymentProof,
+  ConsentLog,
+} from "./models";
 import { randomBytes } from "crypto";
 import type { IStorage } from "./storage";
 

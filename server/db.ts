@@ -1,6 +1,5 @@
 // MongoDB connection using Mongoose
 import mongoose from 'mongoose';
-import { schemas } from '@shared/schema';
 
 let isConnected = false;
 
@@ -28,15 +27,17 @@ export async function connectDB() {
   }
 }
 
-// Create Mongoose models
-export const UserModel = mongoose.models.User || mongoose.model('User', schemas.user);
-export const ServiceModel = mongoose.models.Service || mongoose.model('Service', schemas.service);
-export const OrderModel = mongoose.models.Order || mongoose.model('Order', schemas.order);
-export const TransactionModel = mongoose.models.Transaction || mongoose.model('Transaction', schemas.transaction);
-export const ReferralModel = mongoose.models.Referral || mongoose.model('Referral', schemas.referral);
-export const PaymentProofModel = mongoose.models.PaymentProof || mongoose.model('PaymentProof', schemas.paymentProof);
-export const ConsentLogModel = mongoose.models.ConsentLog || mongoose.model('ConsentLog', schemas.consentLog);
-export const SessionModel = mongoose.models.Session || mongoose.model('Session', schemas.session);
+// Re-export all models from server/models.ts
+export {
+  UserModel,
+  ServiceModel,
+  OrderModel,
+  TransactionModel,
+  ReferralModel,
+  PaymentProofModel,
+  ConsentLogModel,
+  SessionModel,
+} from './models';
 
 // Export mongoose connection for use in other modules
 export { mongoose };

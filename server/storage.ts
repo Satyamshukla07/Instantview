@@ -1,21 +1,22 @@
 // MongoDB Storage implementation using Mongoose
-import {
-  type User,
-  type UpsertUser,
-  type Service,
-  type InsertService,
-  type Order,
-  type InsertOrder,
-  type Transaction,
-  type InsertTransaction,
-  type Referral,
-  type InsertReferral,
-  type PaymentProof,
-  type InsertPaymentProof,
-  type ConsentLog,
-  type InsertConsentLog,
-  generateUUID,
+import type {
+  UpsertUser,
+  InsertService,
+  InsertOrder,
+  InsertTransaction,
+  InsertReferral,
+  InsertPaymentProof,
+  InsertConsentLog,
 } from "@shared/schema";
+import type {
+  User,
+  Service,
+  Order,
+  Transaction,
+  Referral,
+  PaymentProof,
+  ConsentLog,
+} from "./models";
 import {
   UserModel,
   ServiceModel,
@@ -27,6 +28,9 @@ import {
   connectDB,
 } from "./db";
 import { randomBytes } from "crypto";
+
+// Helper to generate UUID (server-side only)
+const generateUUID = () => randomBytes(16).toString('hex');
 
 export interface IStorage {
   // User operations
