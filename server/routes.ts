@@ -161,6 +161,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         orderId: order.id,
       });
 
+      // Simulate order processing with auto-status updates for real-time demo
+      setTimeout(async () => {
+        try {
+          await storage.updateOrderStatus(order.id, "processing");
+          setTimeout(async () => {
+            try {
+              await storage.updateOrderStatus(order.id, "completed");
+            } catch (error) {
+              console.error("Error completing order:", error);
+            }
+          }, 5000); // Complete after 5 seconds
+        } catch (error) {
+          console.error("Error processing order:", error);
+        }
+      }, 3000); // Start processing after 3 seconds
+
       res.json(order);
     } catch (error) {
       console.error("Error creating order:", error);
