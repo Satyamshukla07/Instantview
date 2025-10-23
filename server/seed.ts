@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { services } from "@shared/schema";
+import { services, users } from "@shared/schema";
 
 const initialServices = [
   // Instagram Services
@@ -146,14 +146,37 @@ const initialServices = [
 ];
 
 async function seed() {
-  console.log("Seeding database with initial services...");
+  console.log("Seeding database...");
   
+  // Create admin user
+  console.log("\nCreating admin user...");
+  try {
+    await db.insert(users).values({
+      id: "admin-user-1",
+      email: "admin@reelboost.com",
+      firstName: "Admin",
+      lastName: "User",
+      role: "admin",
+      walletBalance: "1000.00",
+      referralCode: "ADMIN2025",
+    });
+    console.log("✓ Admin user created (ID: admin-user-1, Email: admin@reelboost.com)");
+  } catch (error: any) {
+    if (error.code === '23505') {
+      console.log("- Admin user already exists");
+    } else {
+      console.error("✗ Error creating admin user:", error.message);
+    }
+  }
+
+  // Seed services
+  console.log("\nSeeding services...");
   for (const service of initialServices) {
     try {
       await db.insert(services).values(service);
       console.log(`✓ Added: ${service.name}`);
     } catch (error: any) {
-      if (error.code === '23505') { // Duplicate key error
+      if (error.code === '23505') {
         console.log(`- Skipped (already exists): ${service.name}`);
       } else {
         console.error(`✗ Error adding ${service.name}:`, error.message);
@@ -161,7 +184,7 @@ async function seed() {
     }
   }
   
-  console.log("Seeding completed!");
+  console.log("\nSeeding completed!");
   process.exit(0);
 }
 
