@@ -3,6 +3,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
+import { setupLocalPasswordAuth } from "./localPasswordAuth";
 import rateLimit from "express-rate-limit";
 
 // Rate limiter
@@ -15,6 +16,7 @@ const limiter = rateLimit({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+  setupLocalPasswordAuth(app);
 
   // Apply rate limiting to all API routes
   app.use("/api", limiter);

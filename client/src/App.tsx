@@ -1,5 +1,5 @@
 // Referenced from javascript_log_in_with_replit blueprint and Shadcn sidebar documentation
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,6 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 // Pages
 import Landing from "@/pages/landing";
 import Login from "@/pages/login";
+import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
 import Services from "@/pages/services";
 import Orders from "@/pages/orders";
@@ -27,6 +28,23 @@ import Disclaimer from "@/pages/disclaimer";
 import TermsOfService from "@/pages/terms-of-service";
 import ContactUs from "@/pages/contact-us";
 
+// Admin-only route protection component
+function AdminRoute({ component: Component }: { component: () => JSX.Element }) {
+  const { user, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
+  
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  }
+  
+  if (user?.role !== "admin") {
+    setLocation("/dashboard");
+    return null;
+  }
+  
+  return <Component />;
+}
+
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -36,6 +54,7 @@ function Router() {
         <>
           <Route path="/" component={Landing} />
           <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/refund-policy" component={RefundPolicy} />
           <Route path="/disclaimer" component={Disclaimer} />
@@ -49,7 +68,7 @@ function Router() {
           <Route path="/orders" component={Orders} />
           <Route path="/wallet" component={Wallet} />
           <Route path="/referrals" component={Referrals} />
-          <Route path="/admin" component={Admin} />
+          <Route path="/admin">{() => <AdminRoute component={Admin} />}</Route>
           <Route path="/api-docs" component={ApiDocs} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/refund-policy" component={RefundPolicy} />

@@ -119,6 +119,10 @@ export class MemoryStorage implements IStorage {
     return this.users.get(id);
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(u => u.email?.toLowerCase() === email.toLowerCase());
+  }
+
   async getAllUsers(): Promise<User[]> {
     return Array.from(this.users.values()).sort((a, b) => 
       b.createdAt.getTime() - a.createdAt.getTime()
@@ -164,6 +168,45 @@ export class MemoryStorage implements IStorage {
       user.walletBalance = newBalance;
       user.updatedAt = new Date();
     }
+  }
+
+  async createLocalUser(email: string, passwordHash: string, firstName?: string, lastName?: string, referredBy?: string): Promise<User> {
+    const userId = this.generateId();
+    const referralCode = randomBytes(8).toString("hex").toUpperCase();
+    const user: User = {
+      _id: userId,
+      id: userId,
+      email: email.toLowerCase(),
+      passwordHash,
+      authProvider: "local",
+      firstName: firstName || null,
+      lastName: lastName || null,
+      profileImageUrl: null,
+      role: "user",
+      walletBalance: 0.00,
+      referralCode,
+      referredBy: referredBy || null,
+      apiKey: null,
+      apiKeyEnabled: 0,
+      resellerMarkup: 0.00,
+      totalEarnings: 0.00,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as User;
+    this.users.set(userId, user);
+    return user;
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.role = role as any;
+      user.updatedAt = new Date();
+    }
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    this.users.delete(userId);
   }
 
   async generateApiKey(userId: string): Promise<string> {

@@ -35,10 +35,14 @@ const generateUUID = () => randomBytes(16).toString('hex');
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
+  createLocalUser(email: string, passwordHash: string, firstName?: string, lastName?: string, referredBy?: string): Promise<User>;
   getUserByReferralCode(code: string): Promise<User | undefined>;
   updateUserBalance(userId: string, newBalance: number): Promise<void>;
+  updateUserRole(userId: string, role: string): Promise<void>;
+  deleteUser(userId: string): Promise<void>;
   generateApiKey(userId: string): Promise<string>;
   
   // Service operations
@@ -90,6 +94,11 @@ export class DatabaseStorage implements IStorage {
     return user as unknown as User | undefined;
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const user = await UserModel.findOne({ email: email.toLowerCase() }).lean();
+    return user as unknown as User | undefined;
+  }
+
   async getAllUsers(): Promise<User[]> {
     const users = await UserModel.find().sort({ createdAt: -1 }).lean();
     return users as unknown as User[];
@@ -131,6 +140,32 @@ export class DatabaseStorage implements IStorage {
 
   async updateUserBalance(userId: string, newBalance: number): Promise<void> {
     await UserModel.findByIdAndUpdate(userId, { walletBalance: newBalance });
+  }
+
+  async createLocalUser(email: string, passwordHash: string, firstName?: string, lastName?: string, referredBy?: string): Promise<User> {
+    const userId = randomBytes(16).toString('hex');
+    const referralCode = randomBytes(8).toString('hex').toUpperCase();
+    const newUser = new UserModel({
+      _id: userId,
+      email: email.toLowerCase(),
+      passwordHash,
+      authProvider: 'local',
+      firstName: firstName || null,
+      lastName: lastName || null,
+      role: 'user',
+      referralCode,
+      referredBy: referredBy || null,
+    });
+    await newUser.save();
+    return newUser.toJSON() as User;
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<void> {
+    await UserModel.findByIdAndUpdate(userId, { role });
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    await UserModel.findByIdAndDelete(userId);
   }
 
   async generateApiKey(userId: string): Promise<string> {

@@ -17,8 +17,10 @@ import {
   Lock,
   Award,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  ShoppingCart
 } from "lucide-react";
+import { SiWhatsapp } from "react-icons/si";
 import { ThemeToggle } from "@/components/theme-toggle";
 import {
   Accordion,
@@ -30,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import heroImage from "@assets/stock_images/social_media_growth__3966a271.jpg";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -174,74 +177,93 @@ export default function Landing() {
         {/* Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24" aria-labelledby="hero-heading">
           <div className="max-w-6xl mx-auto">
-            <motion.div 
-              className="text-center space-y-6 sm:space-y-8 mb-8 sm:mb-12"
-              initial="initial"
-              animate={mounted ? "animate" : "initial"}
-              variants={staggerContainer}
-            >
-              <motion.div variants={fadeInUp}>
-                <Badge className="px-4 py-2 text-sm font-medium shadow-md hover:shadow-lg transition-shadow" variant="secondary">
-                  <Sparkles className="h-4 w-4 mr-2 inline" aria-hidden="true" />
-                  <span>100% Real & Organic Engagement</span>
-                </Badge>
-              </motion.div>
-              
-              <motion.h1 
-                id="hero-heading"
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1]"
-                variants={fadeInUp}
-              >
-                Grow Your Social Media
-                <br />
-                <span className="bg-gradient-to-r from-primary via-primary to-purple-600 bg-clip-text text-transparent">
-                  Instantly & Authentically
-                </span>
-              </motion.h1>
-              
-              <motion.p 
-                className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4"
-                variants={fadeInUp}
-              >
-                Professional SMM panel delivering real engagement across Instagram, YouTube, TikTok, and more. 
-                Trusted by 50,000+ creators worldwide.
-              </motion.p>
-              
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+              {/* Text Content */}
               <motion.div 
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4 px-4"
-                variants={fadeInUp}
+                className="space-y-6 sm:space-y-8 lg:order-1"
+                initial="initial"
+                animate={mounted ? "animate" : "initial"}
+                variants={staggerContainer}
               >
-                <Button size="lg" asChild className="text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 shadow-lg hover:shadow-xl transition-all group">
-                  <a href="/login">
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-                  </a>
-                </Button>
-                <Button size="lg" variant="outline" asChild className="text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 shadow-md hover:shadow-lg transition-all">
-                  <a href="#features">Learn More</a>
-                </Button>
+                <motion.div variants={fadeInUp}>
+                  <Badge className="px-4 py-2 text-sm font-medium shadow-md hover:shadow-lg transition-shadow" variant="secondary">
+                    <Sparkles className="h-4 w-4 mr-2 inline" aria-hidden="true" />
+                    <span>100% Real & Organic Engagement</span>
+                  </Badge>
+                </motion.div>
+                
+                <motion.h1 
+                  id="hero-heading"
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.1]"
+                  variants={fadeInUp}
+                >
+                  Boost Your Reels
+                  <br />
+                  <span className="bg-gradient-to-r from-primary via-primary to-purple-600 bg-clip-text text-transparent">
+                    Instantly & Authentically
+                  </span>
+                </motion.h1>
+                
+                <motion.p 
+                  className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed"
+                  variants={fadeInUp}
+                >
+                  Get real Instagram followers, YouTube views, TikTok likes & more. Lightning-fast delivery, 100% secure, trusted by 50,000+ creators worldwide.
+                </motion.p>
+                
+                <motion.div 
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4"
+                  variants={fadeInUp}
+                >
+                  <Button size="lg" asChild className="text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 shadow-lg hover:shadow-xl transition-all group" data-testid="button-hero-cta">
+                    <a href="/signup">
+                      Get Started Free
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+                    </a>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild className="text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 shadow-md hover:shadow-lg transition-all">
+                    <a href="#features">Learn More</a>
+                  </Button>
+                </motion.div>
+
+                {/* Social Proof Banner */}
+                <motion.div variants={fadeInUp} className="mt-6">
+                  <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-purple-500/5 to-primary/5 shadow-lg">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-center gap-2 flex-wrap">
+                        <TrendingUp className="h-5 w-5 text-primary flex-shrink-0" aria-hidden="true" />
+                        <p className="text-sm font-semibold text-center">
+                          <span className="text-primary">10,000+ views</span> delivered in{" "}
+                          <span className="text-purple-600">2 hours</span>!
+                        </p>
+                        <Zap className="h-5 w-5 text-purple-600 animate-pulse flex-shrink-0" aria-hidden="true" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </motion.div>
 
-              {/* Social Proof Banner */}
-              <motion.div variants={fadeInUp}>
-                <Card className="max-w-2xl mx-auto mt-8 border-primary/20 bg-gradient-to-r from-primary/5 via-purple-500/5 to-primary/5 shadow-lg">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-                      <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" aria-hidden="true" />
-                      <p className="text-sm sm:text-base md:text-lg font-semibold text-center">
-                        <span className="text-primary">10,000+ views</span> delivered in{" "}
-                        <span className="text-purple-600">just 2 hours</span>!
-                      </p>
-                      <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 animate-pulse flex-shrink-0" aria-hidden="true" />
-                    </div>
-                  </CardContent>
-                </Card>
+              {/* Hero Image */}
+              <motion.div 
+                className="lg:order-2"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={mounted ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                  <img 
+                    src={heroImage} 
+                    alt="Social media growth - person using smartphone with social media engagement icons"
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
               </motion.div>
-            </motion.div>
+            </div>
 
             {/* Platform Icons */}
             <motion.div 
-              className="flex items-center justify-center gap-6 sm:gap-8 lg:gap-12 flex-wrap pt-4 sm:pt-8"
+              className="flex items-center justify-center gap-6 sm:gap-8 lg:gap-12 flex-wrap pt-12 sm:pt-16"
               initial="initial"
               animate={mounted ? "animate" : "initial"}
               variants={staggerContainer}
@@ -547,6 +569,47 @@ export default function Landing() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Floating WhatsApp Button */}
+      <motion.a
+        href="https://wa.me/9876543210?text=Hi%2C%20I%20need%20help%20with%20ReelBoost"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-20 sm:bottom-6 right-6 z-50 w-14 h-14 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 group"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 1, type: "spring" }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        data-testid="button-whatsapp-float"
+        aria-label="Contact us on WhatsApp"
+      >
+        <SiWhatsapp className="w-7 h-7" />
+        <span className="sr-only">Contact us on WhatsApp</span>
+      </motion.a>
+
+      {/* Mobile Sticky Bottom CTA Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t shadow-2xl z-40 p-3">
+        <div className="flex gap-2">
+          <Button asChild size="lg" className="flex-1 text-base shadow-lg" data-testid="button-mobile-cta-order">
+            <a href="/signup" className="flex items-center justify-center gap-2">
+              <ShoppingCart className="h-5 w-5" />
+              Place Order
+            </a>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="flex-1 text-base bg-[#25D366] hover:bg-[#128C7E] text-white border-none" data-testid="button-mobile-cta-whatsapp">
+            <a 
+              href="https://wa.me/9876543210?text=Hi%2C%20I%20need%20help%20with%20ReelBoost"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2"
+            >
+              <SiWhatsapp className="h-5 w-5" />
+              WhatsApp Support
+            </a>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

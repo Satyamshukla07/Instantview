@@ -12,43 +12,51 @@ import { apiRequest } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 
-const loginSchema = z.object({
+const signupSchema = z.object({
   email: z.string().email("Please enter a valid email"),
-  password: z.string().min(1, "Password is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
 });
 
-type LoginForm = z.infer<typeof loginSchema>;
+type SignupForm = z.infer<typeof signupSchema>;
 
-export default function Login() {
+export default function Signup() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const form = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<SignupForm>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
+      firstName: "",
+      lastName: "",
     },
   });
 
-  const loginMutation = useMutation({
-    mutationFn: async (data: LoginForm) => {
-      return await apiRequest("/api/auth/login", "POST", data);
+  const signupMutation = useMutation({
+    mutationFn: async (data: SignupForm) => {
+      return await apiRequest("/api/auth/signup", "POST", data);
     },
     onSuccess: () => {
+      toast({
+        title: "Account created!",
+        description: "Welcome to ReelBoost",
+      });
       window.location.href = "/dashboard";
     },
     onError: (error: any) => {
       toast({
-        title: "Login failed",
-        description: error.message || "Invalid email or password",
+        title: "Signup failed",
+        description: error.message || "Please try again",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: LoginForm) => {
-    loginMutation.mutate(data);
+  const onSubmit = (data: SignupForm) => {
+    signupMutation.mutate(data);
   };
 
   return (
@@ -61,22 +69,59 @@ export default function Login() {
             </div>
             <span className="text-3xl font-bold">ReelBoost</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Welcome Back</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Create Account</h1>
           <p className="text-muted-foreground">
-            Sign in to your account to continue
+            Start growing your social media presence
           </p>
         </div>
 
         <Card className="shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+            <CardTitle className="text-2xl text-center">Sign Up</CardTitle>
             <CardDescription className="text-center">
-              Enter your credentials to access your account
+              Create your account to get started
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="John" 
+                            {...field} 
+                            data-testid="input-firstname"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="Doe" 
+                            {...field} 
+                            data-testid="input-lastname"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
                   name="email"
@@ -105,7 +150,7 @@ export default function Login() {
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="Enter your password" 
+                          placeholder="Minimum 8 characters" 
                           {...field} 
                           data-testid="input-password"
                         />
@@ -119,10 +164,10 @@ export default function Login() {
                   type="submit" 
                   className="w-full" 
                   size="lg"
-                  disabled={loginMutation.isPending}
-                  data-testid="button-login"
+                  disabled={signupMutation.isPending}
+                  data-testid="button-signup"
                 >
-                  {loginMutation.isPending ? "Signing In..." : "Sign In"}
+                  {signupMutation.isPending ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>
             </Form>
@@ -143,23 +188,23 @@ export default function Login() {
               size="lg" 
               className="w-full"
               asChild
-              data-testid="button-google-login"
+              data-testid="button-google-signup"
             >
               <a href="/api/login" className="flex items-center justify-center gap-3">
                 <FcGoogle className="h-5 w-5" />
-                Sign in with Google
+                Sign up with Google
               </a>
             </Button>
 
             <div className="text-center text-sm text-muted-foreground space-y-2">
               <p>
-                Don't have an account?{" "}
-                <a href="/signup" className="text-primary hover:underline font-medium" data-testid="link-signup">
-                  Sign up
+                Already have an account?{" "}
+                <a href="/login" className="text-primary hover:underline font-medium" data-testid="link-login">
+                  Sign in
                 </a>
               </p>
               <p className="text-xs">
-                By signing in, you agree to our{" "}
+                By signing up, you agree to our{" "}
                 <a href="/terms-of-service" className="text-primary hover:underline">Terms of Service</a>
                 {" "}and{" "}
                 <a href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</a>
