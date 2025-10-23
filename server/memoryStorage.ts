@@ -111,6 +111,12 @@ export class MemoryStorage implements IStorage {
     return this.users.get(id);
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values()).sort((a, b) => 
+      b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+
   async upsertUser(userData: UpsertUser): Promise<User> {
     const userId = userData.id || this.generateId();
     const existingUser = this.users.get(userId);

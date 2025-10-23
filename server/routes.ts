@@ -310,9 +310,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all users (admin only)
   app.get("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
     try {
-      const allUsers = await storage.getServices(); // This will be fixed to get all users
-      // For now, return empty array as we need to add getAllUsers to storage
-      res.json([]);
+      const allUsers = await storage.getAllUsers();
+      res.json(allUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
       res.status(500).json({ message: "Failed to fetch users" });
@@ -327,6 +326,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching all orders:", error);
       res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Update order status (admin only)
+  app.patch("/api/admin/orders/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      
+      if (!status) {
+        return res.status(400).json({ message: "Status is required" });
+      }
+
+      await storage.updateOrderStatus(id, status);
+      res.json({ success: true, message: "Order status updated successfully" });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
     }
   });
 
