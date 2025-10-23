@@ -20,25 +20,33 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold">Legal</h4>
             <nav className="flex flex-col space-y-2 text-sm">
-              <Link href="/privacy-policy">
-                <a className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-privacy">
-                  Privacy Policy
-                </a>
+              <Link 
+                href="/privacy-policy" 
+                className="text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-privacy"
+              >
+                Privacy Policy
               </Link>
-              <Link href="/refund-policy">
-                <a className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-refund">
-                  Refund & Refill Policy
-                </a>
+              <Link 
+                href="/refund-policy" 
+                className="text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-refund"
+              >
+                Refund & Refill Policy
               </Link>
-              <Link href="/terms-of-service">
-                <a className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-terms">
-                  Terms of Service
-                </a>
+              <Link 
+                href="/terms-of-service" 
+                className="text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-terms"
+              >
+                Terms of Service
               </Link>
-              <Link href="/disclaimer">
-                <a className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-disclaimer">
-                  Disclaimer
-                </a>
+              <Link 
+                href="/disclaimer" 
+                className="text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-disclaimer"
+              >
+                Disclaimer
               </Link>
             </nav>
           </div>
@@ -46,10 +54,12 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="font-semibold">Support</h4>
             <nav className="flex flex-col space-y-2 text-sm">
-              <Link href="/contact-us">
-                <a className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-footer-contact">
-                  Contact Us
-                </a>
+              <Link 
+                href="/contact-us" 
+                className="text-muted-foreground hover:text-foreground transition-colors" 
+                data-testid="link-footer-contact"
+              >
+                Contact Us
               </Link>
               <a href="mailto:support@reelboost.com" className="text-muted-foreground hover:text-foreground transition-colors">
                 Email Support
