@@ -114,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Calculate price
-      const amount = (quantity / 1000) * parseFloat(service.pricePerThousand);
+      const amount = (quantity / 1000) * service.pricePerThousand;
 
       // Get user and check balance
       const user = await storage.getUser(userId);
@@ -122,7 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const walletBalance = parseFloat(user.walletBalance);
+      const walletBalance = user.walletBalance;
       if (walletBalance < amount) {
         return res.status(400).json({ message: "Insufficient wallet balance" });
       }
@@ -133,19 +133,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         serviceId,
         targetLink,
         quantity,
-        amount: amount.toFixed(2),
+        amount,
       });
 
       // Deduct from wallet and create transaction
       const newBalance = walletBalance - amount;
-      await storage.updateUserBalance(userId, newBalance.toFixed(2));
+      await storage.updateUserBalance(userId, newBalance);
       
       await storage.createTransaction({
         userId,
         type: "order",
-        amount: amount.toFixed(2),
+        amount,
         balanceBefore: user.walletBalance,
-        balanceAfter: newBalance.toFixed(2),
+        balanceAfter: newBalance,
         description: `Order #${order.id.slice(0, 8)} - ${service.name}`,
         orderId: order.id,
       });
@@ -195,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const proof = await storage.createPaymentProof({
         userId,
-        amount: parseFloat(amount).toFixed(2),
+        amount: parseFloat(amount),
         utrNumber,
         screenshotUrl,
       });
@@ -248,7 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Calculate stats
       const totalOrders = orders.length;
-      const totalSpent = orders.reduce((sum, order) => sum + parseFloat(order.amount), 0);
+      const totalSpent = orders.reduce((sum, order) => sum + order.amount, 0);
       
       // Orders by status
       const ordersByStatus = {
@@ -285,7 +285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const orderDate = new Date(order.createdAt);
         if (orderDate >= thirtyDaysAgo) {
           const dateKey = orderDate.toISOString().split('T')[0];
-          spendingByDay[dateKey] = (spendingByDay[dateKey] || 0) + parseFloat(order.amount);
+          spendingByDay[dateKey] = (spendingByDay[dateKey] || 0) + order.amount;
         }
       });
 
@@ -432,11 +432,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (status === "approved") {
         const user = await storage.getUser(proof.userId);
         if (user) {
-          const currentBalance = parseFloat(user.walletBalance);
-          const amount = parseFloat(proof.amount);
+          const currentBalance = user.walletBalance;
+          const amount = proof.amount;
           const newBalance = currentBalance + amount;
 
-          await storage.updateUserBalance(proof.userId, newBalance.toFixed(2));
+          await storage.updateUserBalance(proof.userId, newBalance);
 
           // Create transaction record
           await storage.createTransaction({
@@ -444,7 +444,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             type: "deposit",
             amount: proof.amount,
             balanceBefore: user.walletBalance,
-            balanceAfter: newBalance.toFixed(2),
+            balanceAfter: newBalance,
             description: `Wallet top-up via UPI${proof.utrNumber ? ` (UTR: ${proof.utrNumber})` : ''}`,
           });
         }
@@ -472,7 +472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pendingOrders = allOrders.filter(o => o.status === "pending").length;
       const processingOrders = allOrders.filter(o => o.status === "processing").length;
       
-      const totalRevenue = allOrders.reduce((sum, order) => sum + parseFloat(order.amount), 0);
+      const totalRevenue = allOrders.reduce((sum, order) => sum + order.amount, 0);
       
       const pendingProofs = allProofs.filter(p => p.status === "pending").length;
       const approvedProofs = allProofs.filter(p => p.status === "approved").length;

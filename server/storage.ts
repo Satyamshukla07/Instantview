@@ -1,12 +1,5 @@
-// Referenced from javascript_database and javascript_log_in_with_replit blueprints
+// MongoDB Storage implementation using Mongoose
 import {
-  users,
-  services,
-  orders,
-  transactions,
-  referrals,
-  paymentProofs,
-  consentLogs,
   type User,
   type UpsertUser,
   type Service,
@@ -21,18 +14,27 @@ import {
   type InsertPaymentProof,
   type ConsentLog,
   type InsertConsentLog,
+  generateUUID,
 } from "@shared/schema";
-import { db } from "./db";
-import { eq, desc, and, sql } from "drizzle-orm";
+import {
+  UserModel,
+  ServiceModel,
+  OrderModel,
+  TransactionModel,
+  ReferralModel,
+  PaymentProofModel,
+  ConsentLogModel,
+  connectDB,
+} from "./db";
 import { randomBytes } from "crypto";
 
 export interface IStorage {
-  // User operations (Required for Replit Auth)
+  // User operations
   getUser(id: string): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
   getUserByReferralCode(code: string): Promise<User | undefined>;
-  updateUserBalance(userId: string, newBalance: string): Promise<void>;
+  updateUserBalance(userId: string, newBalance: number): Promise<void>;
   generateApiKey(userId: string): Promise<string>;
   
   // Service operations
@@ -58,7 +60,7 @@ export interface IStorage {
   // Referral operations
   getReferrals(userId: string): Promise<Referral[]>;
   createReferral(referral: InsertReferral): Promise<Referral>;
-  updateReferralCommission(id: string, commission: string): Promise<void>;
+  updateReferralCommission(id: string, commission: number): Promise<void>;
   
   // Payment proof operations
   getPaymentProofs(userId: string): Promise<PaymentProof[]>;
@@ -73,219 +75,238 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations
+  constructor() {
+    // Ensure DB connection on initialization
+    connectDB().catch(err => console.error("Failed to connect to MongoDB:", err));
+  }
+
+  // ===== USER OPERATIONS =====
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    const user = await UserModel.findById(id).lean();
+    return user as unknown as User | undefined;
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users).orderBy(desc(users.createdAt));
+    const users = await UserModel.find().sort({ createdAt: -1 }).lean();
+    return users as unknown as User[];
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values({
-        ...userData,
-        role: 'user',
-      })
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          profileImageUrl: userData.profileImageUrl,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    
-    // Generate referral code if not exists
-    if (!user.referralCode) {
+    const userId = userData.id;
+    const existingUser = await UserModel.findById(userId);
+
+    if (existingUser) {
+      // Update existing user (preserve role)
+      existingUser.email = userData.email ?? existingUser.email;
+      existingUser.firstName = userData.firstName ?? existingUser.firstName;
+      existingUser.lastName = userData.lastName ?? existingUser.lastName;
+      existingUser.profileImageUrl = userData.profileImageUrl ?? existingUser.profileImageUrl;
+      await existingUser.save();
+      return existingUser.toJSON() as User;
+    } else {
+      // Create new user with role='user' and generate referral code
       const referralCode = randomBytes(8).toString('hex').toUpperCase();
-      const [updatedUser] = await db
-        .update(users)
-        .set({ referralCode })
-        .where(eq(users.id, user.id))
-        .returning();
-      return updatedUser;
+      const newUser = new UserModel({
+        _id: userId,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profileImageUrl: userData.profileImageUrl,
+        role: 'user',
+        referralCode,
+      });
+      await newUser.save();
+      return newUser.toJSON() as User;
     }
-    
-    return user;
   }
 
   async getUserByReferralCode(code: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.referralCode, code));
-    return user;
+    const user = await UserModel.findOne({ referralCode: code }).lean();
+    return user as unknown as User | undefined;
   }
 
-  async updateUserBalance(userId: string, newBalance: string): Promise<void> {
-    await db.update(users).set({ walletBalance: newBalance }).where(eq(users.id, userId));
+  async updateUserBalance(userId: string, newBalance: number): Promise<void> {
+    await UserModel.findByIdAndUpdate(userId, { walletBalance: newBalance });
   }
 
   async generateApiKey(userId: string): Promise<string> {
     const apiKey = randomBytes(32).toString('hex');
-    await db.update(users).set({ apiKey, apiKeyEnabled: 1 }).where(eq(users.id, userId));
+    await UserModel.findByIdAndUpdate(userId, { apiKey, apiKeyEnabled: 1 });
     return apiKey;
   }
 
-  // Service operations
+  // ===== SERVICE OPERATIONS =====
   async getServices(): Promise<Service[]> {
-    return await db.select().from(services).orderBy(desc(services.createdAt));
+    const services = await ServiceModel.find().sort({ createdAt: -1 }).lean();
+    return services as unknown as Service[];
   }
 
   async getActiveServices(): Promise<Service[]> {
-    return await db.select().from(services).where(eq(services.isActive, 1));
+    const services = await ServiceModel.find({ isActive: 1 }).lean();
+    return services as unknown as Service[];
   }
 
   async getService(id: string): Promise<Service | undefined> {
-    const [service] = await db.select().from(services).where(eq(services.id, id));
-    return service;
+    const service = await ServiceModel.findById(id).lean();
+    return service as unknown as Service | undefined;
   }
 
   async createService(serviceData: InsertService): Promise<Service> {
-    const [service] = await db.insert(services).values(serviceData).returning();
-    return service;
+    const service = new ServiceModel({
+      _id: generateUUID(),
+      ...serviceData,
+    });
+    await service.save();
+    return service.toJSON() as Service;
   }
 
   async updateService(id: string, serviceData: Partial<InsertService>): Promise<Service> {
-    const [service] = await db
-      .update(services)
-      .set({ ...serviceData, updatedAt: new Date() })
-      .where(eq(services.id, id))
-      .returning();
-    return service;
+    const service = await ServiceModel.findByIdAndUpdate(
+      id,
+      { ...serviceData, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!service) {
+      throw new Error('Service not found');
+    }
+    return service.toJSON() as Service;
   }
 
   async deleteService(id: string): Promise<void> {
-    await db.delete(services).where(eq(services.id, id));
+    await ServiceModel.findByIdAndDelete(id);
   }
 
-  // Order operations
+  // ===== ORDER OPERATIONS =====
   async getOrders(userId: string): Promise<Order[]> {
-    return await db
-      .select()
-      .from(orders)
-      .where(eq(orders.userId, userId))
-      .orderBy(desc(orders.createdAt));
+    const orders = await OrderModel.find({ userId }).sort({ createdAt: -1 }).lean();
+    return orders as unknown as Order[];
   }
 
   async getRecentOrders(userId: string, limit: number = 10): Promise<Order[]> {
-    return await db
-      .select()
-      .from(orders)
-      .where(eq(orders.userId, userId))
-      .orderBy(desc(orders.createdAt))
-      .limit(limit);
+    const orders = await OrderModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+    return orders as unknown as Order[];
   }
 
   async getAllOrders(): Promise<Order[]> {
-    return await db.select().from(orders).orderBy(desc(orders.createdAt));
+    const orders = await OrderModel.find().sort({ createdAt: -1 }).lean();
+    return orders as unknown as Order[];
   }
 
   async getOrder(id: string): Promise<Order | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.id, id));
-    return order;
+    const order = await OrderModel.findById(id).lean();
+    return order as unknown as Order | undefined;
   }
 
   async createOrder(orderData: InsertOrder): Promise<Order> {
-    const [order] = await db.insert(orders).values(orderData).returning();
-    return order;
+    const order = new OrderModel({
+      _id: generateUUID(),
+      ...orderData,
+      status: 'pending',
+    });
+    await order.save();
+    return order.toJSON() as Order;
   }
 
   async updateOrderStatus(id: string, status: string): Promise<void> {
-    await db
-      .update(orders)
-      .set({ status: status as any, updatedAt: new Date() })
-      .where(eq(orders.id, id));
+    await OrderModel.findByIdAndUpdate(id, { status, updatedAt: new Date() });
   }
 
-  // Transaction operations
+  // ===== TRANSACTION OPERATIONS =====
   async getTransactions(userId: string): Promise<Transaction[]> {
-    return await db
-      .select()
-      .from(transactions)
-      .where(eq(transactions.userId, userId))
-      .orderBy(desc(transactions.createdAt));
+    const transactions = await TransactionModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    return transactions as unknown as Transaction[];
   }
 
   async createTransaction(transactionData: InsertTransaction): Promise<Transaction> {
-    const [transaction] = await db.insert(transactions).values(transactionData).returning();
-    return transaction;
+    const transaction = new TransactionModel({
+      _id: generateUUID(),
+      ...transactionData,
+    });
+    await transaction.save();
+    return transaction.toJSON() as Transaction;
   }
 
-  // Referral operations
+  // ===== REFERRAL OPERATIONS =====
   async getReferrals(userId: string): Promise<Referral[]> {
-    return await db
-      .select()
-      .from(referrals)
-      .where(eq(referrals.referrerId, userId))
-      .orderBy(desc(referrals.createdAt));
+    const referrals = await ReferralModel.find({ referrerId: userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    return referrals as unknown as Referral[];
   }
 
   async createReferral(referralData: InsertReferral): Promise<Referral> {
-    const [referral] = await db.insert(referrals).values(referralData).returning();
-    return referral;
+    const referral = new ReferralModel({
+      _id: generateUUID(),
+      ...referralData,
+    });
+    await referral.save();
+    return referral.toJSON() as Referral;
   }
 
-  async updateReferralCommission(id: string, commission: string): Promise<void> {
-    await db.update(referrals).set({ commissionEarned: commission }).where(eq(referrals.id, id));
+  async updateReferralCommission(id: string, commission: number): Promise<void> {
+    await ReferralModel.findByIdAndUpdate(id, { commissionEarned: commission });
   }
 
-  // Payment proof operations
+  // ===== PAYMENT PROOF OPERATIONS =====
   async getPaymentProofs(userId: string): Promise<PaymentProof[]> {
-    return await db
-      .select()
-      .from(paymentProofs)
-      .where(eq(paymentProofs.userId, userId))
-      .orderBy(desc(paymentProofs.createdAt));
+    const proofs = await PaymentProofModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    return proofs as unknown as PaymentProof[];
   }
 
   async getAllPaymentProofs(): Promise<PaymentProof[]> {
-    return await db.select().from(paymentProofs).orderBy(desc(paymentProofs.createdAt));
+    const proofs = await PaymentProofModel.find()
+      .sort({ createdAt: -1 })
+      .lean();
+    return proofs as unknown as PaymentProof[];
   }
 
   async getPaymentProof(id: string): Promise<PaymentProof | undefined> {
-    const [proof] = await db.select().from(paymentProofs).where(eq(paymentProofs.id, id));
-    return proof;
+    const proof = await PaymentProofModel.findById(id).lean();
+    return proof as unknown as PaymentProof | undefined;
   }
 
   async createPaymentProof(proofData: InsertPaymentProof): Promise<PaymentProof> {
-    const [proof] = await db.insert(paymentProofs).values(proofData).returning();
-    return proof;
+    const proof = new PaymentProofModel({
+      _id: generateUUID(),
+      ...proofData,
+      status: 'pending',
+    });
+    await proof.save();
+    return proof.toJSON() as PaymentProof;
   }
 
   async updatePaymentProofStatus(id: string, status: string, adminNotes?: string): Promise<void> {
-    await db
-      .update(paymentProofs)
-      .set({ 
-        status: status as any, 
-        adminNotes,
-        updatedAt: new Date() 
-      })
-      .where(eq(paymentProofs.id, id));
+    await PaymentProofModel.findByIdAndUpdate(id, {
+      status,
+      adminNotes,
+      updatedAt: new Date(),
+    });
   }
 
-  // Consent log operations
+  // ===== CONSENT LOG OPERATIONS =====
   async createConsentLog(logData: InsertConsentLog): Promise<ConsentLog> {
-    const [log] = await db.insert(consentLogs).values(logData).returning();
-    return log;
+    const log = new ConsentLogModel({
+      _id: generateUUID(),
+      ...logData,
+    });
+    await log.save();
+    return log.toJSON() as ConsentLog;
   }
 
   async getConsentLogs(userId: string): Promise<ConsentLog[]> {
-    return await db
-      .select()
-      .from(consentLogs)
-      .where(eq(consentLogs.userId, userId))
-      .orderBy(desc(consentLogs.createdAt));
+    const logs = await ConsentLogModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    return logs as unknown as ConsentLog[];
   }
 }
 
-// Use in-memory storage for local development, database storage for production
-import { MemoryStorage } from "./memoryStorage";
-
-export const storage = process.env.DATABASE_URL 
-  ? new DatabaseStorage() 
-  : new MemoryStorage();
+// Export storage instance
+export const storage = new DatabaseStorage();
