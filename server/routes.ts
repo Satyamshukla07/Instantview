@@ -320,6 +320,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create user (admin only)
+  app.post("/api/admin/users", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const createUserSchema = z.object({
+        email: z.string().email("Invalid email address"),
+        password: z.string().min(6, "Password must be at least 6 characters"),
+        name: z.string().optional(),
+        phone: z.string().optional(),
+        role: z.enum(["user", "admin"]).optional(),
+      });
+
+      const validationResult = createUserSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: validationResult.error.errors[0].message 
+        });
+      }
+
+      const { email, password, name, phone, role = "user" } = validationResult.data;
+
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User with this email already exists" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const referralCode = generateReferralCode();
+
+      const newUser = await storage.createUser({
+        email,
+        password: hashedPassword,
+        name,
+        phone,
+        role,
+        walletBalance: 0,
+        referralCode,
+      });
+
+      res.json({ success: true, user: newUser });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  // Update user (admin only)
+  app.patch("/api/admin/users/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await storage.updateUser(id, updates);
+      res.json({ success: true, message: "User updated successfully" });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  // Delete user (admin only)
+  app.delete("/api/admin/users/:id", isAuthenticated, isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await storage.deleteUser(id);
+      res.json({ success: true, message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   // Get all orders (admin only)
   app.get("/api/admin/orders", isAuthenticated, isAdmin, async (req, res) => {
     try {

@@ -27,6 +27,8 @@ import RefundPolicy from "@/pages/refund-policy";
 import Disclaimer from "@/pages/disclaimer";
 import TermsOfService from "@/pages/terms-of-service";
 import ContactUs from "@/pages/contact-us";
+import ManageUsers from "@/pages/admin/manage-users";
+import ManageServices from "@/pages/admin/manage-services";
 
 // Admin-only route protection component
 function AdminRoute({ component: Component }: { component: () => JSX.Element }) {
@@ -69,6 +71,8 @@ function Router() {
           <Route path="/wallet" component={Wallet} />
           <Route path="/referrals" component={Referrals} />
           <Route path="/admin">{() => <AdminRoute component={Admin} />}</Route>
+          <Route path="/admin/manage-users">{() => <AdminRoute component={ManageUsers} />}</Route>
+          <Route path="/admin/manage-services">{() => <AdminRoute component={ManageServices} />}</Route>
           <Route path="/api-docs" component={ApiDocs} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/refund-policy" component={RefundPolicy} />

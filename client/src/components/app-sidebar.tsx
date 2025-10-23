@@ -43,8 +43,8 @@ export function AppSidebar() {
 
   const adminMenuItems = [
     { title: "Admin Panel", url: "/admin", icon: TrendingUp },
-    { title: "Manage Users", url: "/admin/users", icon: Users },
-    { title: "Manage Services", url: "/admin/services", icon: Settings },
+    { title: "Manage Users", url: "/admin/manage-users", icon: Users },
+    { title: "Manage Services", url: "/admin/manage-services", icon: Settings },
   ];
 
   const resellerMenuItems = [
