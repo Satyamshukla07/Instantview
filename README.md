@@ -63,10 +63,22 @@ REPLIT_DOMAINS=localhost:5000
 
 ### 4. (Optional) Setup Google OAuth
 
+**Note:** If you don't setup Google OAuth, the app will auto-login as admin for testing purposes. Both email/password signup and auto-login will work.
+
+To enable real Google Sign In:
+
 1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-2. Create a new OAuth 2.0 Client ID
-3. Add authorized redirect URI: `http://localhost:5000/api/callback`
-4. Copy Client ID and Client Secret to your `.env` file
+2. Create a new project (or select existing)
+3. Enable "Google+ API" in the Library
+4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
+5. Configure consent screen if prompted
+6. Application type: "Web application"
+7. Add authorized redirect URI: `http://localhost:5000/api/callback`
+8. Copy Client ID and Client Secret to your `.env` file:
+   ```
+   GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-client-secret-here
+   ```
 
 ### 5. Run the Application
 

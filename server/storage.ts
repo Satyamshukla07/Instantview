@@ -106,7 +106,9 @@ export class DatabaseStorage implements IStorage {
 
   async upsertUser(userData: UpsertUser): Promise<User> {
     const userId = userData.id;
-    const existingUser = await UserModel.findById(userId);
+    
+    // First check if user exists by ID
+    let existingUser = await UserModel.findById(userId);
 
     if (existingUser) {
       // Update existing user (preserve role)
@@ -116,21 +118,34 @@ export class DatabaseStorage implements IStorage {
       existingUser.profileImageUrl = userData.profileImageUrl ?? existingUser.profileImageUrl;
       await existingUser.save();
       return existingUser.toJSON() as unknown as User;
-    } else {
-      // Create new user with role='user' and generate referral code
-      const referralCode = randomBytes(8).toString('hex').toUpperCase();
-      const newUser = new UserModel({
-        _id: userId,
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        profileImageUrl: userData.profileImageUrl,
-        role: 'user',
-        referralCode,
-      });
-      await newUser.save();
-      return newUser.toJSON() as unknown as User;
     }
+    
+    // Check if user exists with same email (for dev auto-login scenario)
+    if (userData.email) {
+      const userByEmail = await UserModel.findOne({ email: userData.email.toLowerCase() });
+      if (userByEmail) {
+        // Update the existing user's data
+        userByEmail.firstName = userData.firstName ?? userByEmail.firstName;
+        userByEmail.lastName = userData.lastName ?? userByEmail.lastName;
+        userByEmail.profileImageUrl = userData.profileImageUrl ?? userByEmail.profileImageUrl;
+        await userByEmail.save();
+        return userByEmail.toJSON() as unknown as User;
+      }
+    }
+    
+    // Create new user with role='user' and generate referral code
+    const referralCode = randomBytes(8).toString('hex').toUpperCase();
+    const newUser = new UserModel({
+      _id: userId,
+      email: userData.email,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      profileImageUrl: userData.profileImageUrl,
+      role: 'user',
+      referralCode,
+    });
+    await newUser.save();
+    return newUser.toJSON() as unknown as User;
   }
 
   async getUserByReferralCode(code: string): Promise<User | undefined> {
