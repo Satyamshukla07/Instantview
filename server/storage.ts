@@ -157,7 +157,7 @@ export class DatabaseStorage implements IStorage {
       referredBy: referredBy || null,
     });
     await newUser.save();
-    return newUser.toJSON() as User;
+    return newUser.toJSON() as unknown as User;
   }
 
   async updateUserRole(userId: string, role: string): Promise<void> {
@@ -196,7 +196,7 @@ export class DatabaseStorage implements IStorage {
       ...serviceData,
     });
     await service.save();
-    return service.toJSON() as Service;
+    return service.toJSON() as unknown as Service;
   }
 
   async updateService(id: string, serviceData: Partial<InsertService>): Promise<Service> {
@@ -208,7 +208,7 @@ export class DatabaseStorage implements IStorage {
     if (!service) {
       throw new Error('Service not found');
     }
-    return service.toJSON() as Service;
+    return service.toJSON() as unknown as Service;
   }
 
   async deleteService(id: string): Promise<void> {
@@ -246,7 +246,7 @@ export class DatabaseStorage implements IStorage {
       status: 'pending',
     });
     await order.save();
-    return order.toJSON() as Order;
+    return order.toJSON() as unknown as Order;
   }
 
   async updateOrderStatus(id: string, status: string): Promise<void> {
@@ -267,7 +267,7 @@ export class DatabaseStorage implements IStorage {
       ...transactionData,
     });
     await transaction.save();
-    return transaction.toJSON() as Transaction;
+    return transaction.toJSON() as unknown as Transaction;
   }
 
   // ===== REFERRAL OPERATIONS =====
@@ -284,7 +284,7 @@ export class DatabaseStorage implements IStorage {
       ...referralData,
     });
     await referral.save();
-    return referral.toJSON() as Referral;
+    return referral.toJSON() as unknown as Referral;
   }
 
   async updateReferralCommission(id: string, commission: number): Promise<void> {
@@ -318,7 +318,7 @@ export class DatabaseStorage implements IStorage {
       status: 'pending',
     });
     await proof.save();
-    return proof.toJSON() as PaymentProof;
+    return proof.toJSON() as unknown as PaymentProof;
   }
 
   async updatePaymentProofStatus(id: string, status: string, adminNotes?: string): Promise<void> {
@@ -336,7 +336,7 @@ export class DatabaseStorage implements IStorage {
       ...logData,
     });
     await log.save();
-    return log.toJSON() as ConsentLog;
+    return log.toJSON() as unknown as ConsentLog;
   }
 
   async getConsentLogs(userId: string): Promise<ConsentLog[]> {
