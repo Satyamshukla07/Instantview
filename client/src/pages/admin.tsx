@@ -186,7 +186,7 @@ function PaymentProofsTab({ selectedProof, setSelectedProof }: {
 
   const approveMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      return await apiRequest("PATCH", `/api/admin/payment-proofs/${id}`, {
+      return await apiRequest(`/api/admin/payment-proofs/${id}`, "PATCH", {
         status,
         adminNotes,
       });
@@ -420,7 +420,7 @@ function ServicesTab({
 
   const createMutation = useMutation({
     mutationFn: async (data: ServiceFormData) => {
-      return await apiRequest("POST", "/api/admin/services", data);
+      return await apiRequest("/api/admin/services", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });
@@ -443,7 +443,7 @@ function ServicesTab({
 
   const toggleActiveMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: number }) => {
-      return await apiRequest("PATCH", `/api/admin/services/${id}`, { isActive });
+      return await apiRequest(`/api/admin/services/${id}`, "PATCH", { isActive });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/services"] });

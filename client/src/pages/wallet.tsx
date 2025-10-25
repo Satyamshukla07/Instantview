@@ -53,7 +53,7 @@ export default function Wallet() {
 
   const submitPaymentMutation = useMutation({
     mutationFn: async (data: { amount: number; utrNumber: string; screenshotUrl: string }) => {
-      await apiRequest("POST", "/api/wallet/submit-payment-proof", data);
+      await apiRequest("/api/wallet/submit-payment-proof", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/wallet/payment-proofs"] });

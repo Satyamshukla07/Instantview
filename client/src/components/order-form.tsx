@@ -65,7 +65,7 @@ export function OrderForm({ service, onSuccess }: OrderFormProps) {
 
   const orderMutation = useMutation({
     mutationFn: async (data: OrderFormData) => {
-      const response = await apiRequest("POST", "/api/orders", {
+      const response = await apiRequest("/api/orders", "POST", {
         serviceId: service.id,
         targetLink: data.targetLink,
         quantity: data.quantity,
