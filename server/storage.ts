@@ -115,7 +115,7 @@ export class DatabaseStorage implements IStorage {
       existingUser.lastName = userData.lastName ?? existingUser.lastName;
       existingUser.profileImageUrl = userData.profileImageUrl ?? existingUser.profileImageUrl;
       await existingUser.save();
-      return existingUser.toJSON() as User;
+      return existingUser.toJSON() as unknown as User;
     } else {
       // Create new user with role='user' and generate referral code
       const referralCode = randomBytes(8).toString('hex').toUpperCase();
@@ -129,7 +129,7 @@ export class DatabaseStorage implements IStorage {
         referralCode,
       });
       await newUser.save();
-      return newUser.toJSON() as User;
+      return newUser.toJSON() as unknown as User;
     }
   }
 
