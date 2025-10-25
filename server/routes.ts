@@ -5,6 +5,8 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 import { setupLocalPasswordAuth } from "./localPasswordAuth";
 import rateLimit from "express-rate-limit";
+import { z } from "zod";
+import bcrypt from "bcryptjs";
 
 // Rate limiter
 const limiter = rateLimit({
@@ -342,9 +344,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const createUserSchema = z.object({
         email: z.string().email("Invalid email address"),
         password: z.string().min(6, "Password must be at least 6 characters"),
-        name: z.string().optional(),
-        phone: z.string().optional(),
-        role: z.enum(["user", "admin"]).optional(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+        role: z.enum(["user", "admin", "reseller"]).optional(),
       });
 
       const validationResult = createUserSchema.safeParse(req.body);
@@ -354,7 +356,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const { email, password, name, phone, role = "user" } = validationResult.data;
+      const { email, password, firstName, lastName, role = "user" } = validationResult.data;
 
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
@@ -362,17 +364,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const referralCode = generateReferralCode();
 
-      const newUser = await storage.createUser({
+      const newUser = await storage.createLocalUser(
         email,
-        password: hashedPassword,
-        name,
-        phone,
-        role,
-        walletBalance: 0,
-        referralCode,
-      });
+        hashedPassword,
+        firstName,
+        lastName
+      );
+
+      // Update role if different from default
+      if (role !== "user") {
+        await storage.updateUserRole(newUser.id, role);
+      }
 
       res.json({ success: true, user: newUser });
     } catch (error) {
@@ -385,14 +388,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/admin/users/:id", isAuthenticated, isAdmin, async (req, res) => {
     try {
       const { id } = req.params;
-      const updates = req.body;
+      const { role, walletBalance } = req.body;
       
       const user = await storage.getUser(id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      await storage.updateUser(id, updates);
+      // Update role if provided
+      if (role && ["user", "admin", "reseller"].includes(role)) {
+        await storage.updateUserRole(id, role);
+      }
+
+      // Update wallet balance if provided
+      if (typeof walletBalance === 'number') {
+        await storage.updateUserBalance(id, walletBalance);
+      }
+
       res.json({ success: true, message: "User updated successfully" });
     } catch (error) {
       console.error("Error updating user:", error);

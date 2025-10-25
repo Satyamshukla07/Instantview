@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 
 let isConnected = false;
 
-// MongoDB connection URI
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://smmpanel:smmpanelpassword@smmcluster.ltlnh0v.mongodb.net/reelboost?retryWrites=true&w=majority';
+// MongoDB connection URI - must be provided via environment variable
+const MONGODB_URI = process.env.MONGODB_URI;
 
 // Connect to MongoDB
 export async function connectDB() {
