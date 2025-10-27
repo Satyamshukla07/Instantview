@@ -34,6 +34,8 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import heroPhone from "@assets/stock_images/modern_smartphone_so_6afcad9f.jpg";
 import heroBg from "@assets/stock_images/abstract_digital_mar_56f932e4.jpg";
+import heroCreator from "@assets/stock_images/happy_content_creato_56d62704.jpg";
+import heroEngagement from "@assets/stock_images/social_media_engagem_027ba258.jpg";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -177,8 +179,8 @@ export default function Landing() {
       <main>
         {/* Hero Section */}
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24" aria-labelledby="hero-heading">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[600px]">
               {/* Text Content */}
               <motion.div 
                 className="space-y-6 sm:space-y-8 lg:order-1"
@@ -246,13 +248,13 @@ export default function Landing() {
 
               {/* Hero Visual with Images */}
               <motion.div 
-                className="lg:order-2 relative"
+                className="lg:order-2 relative flex items-center justify-center"
                 initial={{ opacity: 0, x: 50 }}
                 animate={mounted ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="relative h-[400px] sm:h-[500px]">
-                  {/* Background gradient overlay */}
+                <div className="relative w-full h-[500px] sm:h-[600px]">
+                  {/* Background gradient with image */}
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-primary/20 rounded-3xl overflow-hidden">
                     <img 
                       src={heroBg} 
@@ -261,21 +263,44 @@ export default function Landing() {
                     />
                   </div>
                   
-                  {/* Floating phone mockup */}
+                  {/* Main creator image - bottom left */}
                   <motion.div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-80"
+                    className="absolute bottom-0 left-0 w-48 sm:w-64 h-64 sm:h-80 rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10"
+                    animate={{
+                      y: [0, -10, 0],
+                    }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <div className="relative w-full h-full">
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent z-10" />
+                      <img 
+                        src={heroCreator} 
+                        alt="Happy content creator"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Phone mockup - center right */}
+                  <motion.div
+                    className="absolute top-1/2 right-8 -translate-y-1/2 w-56 sm:w-72"
                     animate={{
                       y: [0, -15, 0],
                     }}
                     transition={{
                       duration: 4,
                       repeat: Infinity,
-                      ease: "easeInOut"
+                      ease: "easeInOut",
+                      delay: 0.3
                     }}
                   >
                     <div className="relative">
                       {/* Glow effect */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary blur-3xl opacity-40 rounded-full" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary blur-3xl opacity-50 rounded-full" />
                       
                       {/* Phone image */}
                       <img 
@@ -286,9 +311,32 @@ export default function Landing() {
                     </div>
                   </motion.div>
 
+                  {/* Engagement icons card - top left */}
+                  <motion.div
+                    className="absolute top-8 left-8 w-32 sm:w-40 h-32 sm:h-40 rounded-2xl overflow-hidden shadow-xl border-2 border-white/20"
+                    animate={{
+                      rotate: [0, 5, 0, -5, 0],
+                    }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.5
+                    }}
+                  >
+                    <div className="relative w-full h-full">
+                      <div className="absolute inset-0 bg-gradient-to-br from-secondary/30 to-primary/30 z-10" />
+                      <img 
+                        src={heroEngagement} 
+                        alt="Social media engagement"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </motion.div>
+
                   {/* Floating stat cards */}
                   <motion.div
-                    className="absolute top-8 right-4 glass p-4 rounded-2xl shadow-xl border border-border/50"
+                    className="absolute top-4 right-4 glass p-3 sm:p-4 rounded-2xl shadow-xl border border-border/50"
                     animate={{
                       y: [0, -10, 0],
                     }}
@@ -299,19 +347,19 @@ export default function Landing() {
                       delay: 0.2
                     }}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                        <TrendingUp className="h-5 w-5 text-white" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                        <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold gradient-text">1M+</div>
+                        <div className="text-xl sm:text-2xl font-bold gradient-text">1M+</div>
                         <div className="text-xs text-muted-foreground">Orders</div>
                       </div>
                     </div>
                   </motion.div>
 
                   <motion.div
-                    className="absolute bottom-12 left-4 glass p-4 rounded-2xl shadow-xl border border-border/50"
+                    className="absolute bottom-4 right-4 glass p-3 sm:p-4 rounded-2xl shadow-xl border border-border/50"
                     animate={{
                       y: [0, -8, 0],
                     }}
@@ -322,12 +370,12 @@ export default function Landing() {
                       delay: 0.5
                     }}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center">
-                        <Star className="h-5 w-5 text-white" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center">
+                        <Star className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold gradient-text">99.9%</div>
+                        <div className="text-xl sm:text-2xl font-bold gradient-text">99.9%</div>
                         <div className="text-xs text-muted-foreground">Success</div>
                       </div>
                     </div>
