@@ -61,12 +61,12 @@ export default function Dashboard() {
     const orderDate = new Date(o.createdAt).toDateString();
     return o.status === "completed" && orderDate === today;
   }).length || 0;
-  const totalSpent = recentOrders?.reduce((sum, order) => sum + parseFloat(order.amount), 0) || 0;
+  const totalSpent = recentOrders?.reduce((sum, order) => sum + order.amount, 0) || 0;
 
   const stats = [
     {
       title: "Wallet Balance",
-      value: `₹${parseFloat(user?.walletBalance || "0").toFixed(2)}`,
+      value: `₹${(user?.walletBalance || 0).toFixed(2)}`,
       icon: Wallet,
       iconColor: "text-green-500",
       bgColor: "bg-green-500/10",
@@ -200,7 +200,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-4 flex-shrink-0">
                     <div className="text-right">
-                      <div className="font-medium">₹{parseFloat(order.amount).toFixed(2)}</div>
+                      <div className="font-medium">₹{order.amount.toFixed(2)}</div>
                       <div className="text-sm text-muted-foreground">{order.quantity.toLocaleString()} units</div>
                     </div>
                     {getStatusBadge(order.status)}
