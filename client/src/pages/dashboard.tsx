@@ -111,22 +111,32 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-8">
+    <motion.div 
+      className="space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <motion.div 
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <div>
-          <h1 className="text-3xl font-semibold">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
-            Welcome back, {user?.firstName || "User"}
+          <h1 className="text-4xl font-bold tracking-tight gradient-text">Dashboard</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Welcome back, {user?.firstName || "User"}! 👋
           </p>
         </div>
-        <Button asChild data-testid="button-new-order">
+        <Button asChild className="bg-gradient-to-r from-primary to-secondary hover:scale-105 shadow-lg hover:shadow-xl transition-all" size="lg" data-testid="button-new-order">
           <Link href="/services">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-5 w-5 mr-2" />
             New Order
           </Link>
         </Button>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -136,16 +146,17 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
+            whileHover={{ y: -4 }}
           >
-            <Card data-testid={stat.testId} className="hover:shadow-lg transition-shadow duration-300">
+            <Card data-testid={stat.testId} className="hover:shadow-xl transition-all duration-300 border-border/50 backdrop-blur">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">{stat.title}</p>
-                    <p className="text-2xl font-semibold">{stat.value}</p>
+                    <p className="text-sm font-medium text-muted-foreground uppercase tracking-wide">{stat.title}</p>
+                    <p className="text-3xl font-bold">{stat.value}</p>
                   </div>
-                  <div className={`w-12 h-12 rounded-md ${stat.bgColor} flex items-center justify-center`}>
-                    <stat.icon className={`h-6 w-6 ${stat.iconColor}`} />
+                  <div className={`w-14 h-14 rounded-2xl ${stat.bgColor} flex items-center justify-center shadow-lg`}>
+                    <stat.icon className={`h-7 w-7 ${stat.iconColor}`} />
                   </div>
                 </div>
               </CardContent>
@@ -155,10 +166,10 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Activity */}
-      <Card>
+      <Card className="shadow-lg border-border/50">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <CardTitle className="text-xl font-medium">Recent Orders</CardTitle>
-          <Button variant="ghost" size="sm" asChild>
+          <CardTitle className="text-2xl font-bold">Recent Orders</CardTitle>
+          <Button variant="ghost" size="sm" asChild className="hover:scale-105 transition-all">
             <Link href="/orders">
               View All
               <ArrowUpRight className="h-4 w-4 ml-1" />
@@ -349,6 +360,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </motion.div>
   );
 }

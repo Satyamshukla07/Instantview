@@ -32,7 +32,8 @@ import { Badge } from "@/components/ui/badge";
 import { Footer } from "@/components/footer";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import heroImage from "@assets/stock_images/social_media_growth__3966a271.jpg";
+import heroPhone from "@assets/stock_images/modern_smartphone_so_6afcad9f.jpg";
+import heroBg from "@assets/stock_images/abstract_digital_mar_56f932e4.jpg";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -145,28 +146,28 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b sticky top-0 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 z-50 shadow-sm" role="banner">
-        <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between" aria-label="Main navigation">
+      {/* Header with Glassmorphism */}
+      <header className="sticky top-0 glass-strong z-50 border-b border-border/50" role="banner">
+        <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between" aria-label="Main navigation">
           <motion.div 
-            className="flex items-center gap-2"
+            className="flex items-center gap-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
           >
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md">
-              <TrendingUp className="h-5 w-5 text-primary-foreground" aria-hidden="true" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-primary to-secondary flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
+              <TrendingUp className="h-5 w-5 text-white" aria-hidden="true" />
             </div>
-            <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">ReelBoost</span>
+            <span className="text-xl sm:text-2xl font-bold tracking-tight gradient-text">ReelBoost</span>
           </motion.div>
           <motion.div 
             className="flex items-center gap-3 sm:gap-4"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.6 }}
           >
             <ThemeToggle />
-            <Button asChild className="shadow-md hover:shadow-lg transition-shadow">
+            <Button asChild size="lg" className="btn-gradient shadow-lg hover:shadow-xl transition-all hover:scale-105" data-testid="button-sign-in">
               <a href="/login">Sign In</a>
             </Button>
           </motion.div>
@@ -199,7 +200,7 @@ export default function Landing() {
                 >
                   Boost Your Reels
                   <br />
-                  <span className="bg-gradient-to-r from-primary via-primary to-purple-600 bg-clip-text text-transparent">
+                  <span className="gradient-text">
                     Instantly & Authentically
                   </span>
                 </motion.h1>
@@ -215,48 +216,122 @@ export default function Landing() {
                   className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4"
                   variants={fadeInUp}
                 >
-                  <Button size="lg" asChild className="text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 shadow-lg hover:shadow-xl transition-all group" data-testid="button-hero-cta">
+                  <Button size="lg" asChild className="text-base sm:text-lg px-8 sm:px-10 h-13 sm:h-15 shadow-lg hover:shadow-2xl transition-all group bg-gradient-to-r from-primary to-secondary hover:scale-105" data-testid="button-hero-cta">
                     <a href="/signup">
                       Get Started Free
                       <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                     </a>
                   </Button>
-                  <Button size="lg" variant="outline" asChild className="text-base sm:text-lg px-6 sm:px-8 h-12 sm:h-14 shadow-md hover:shadow-lg transition-all">
+                  <Button size="lg" variant="outline" asChild className="text-base sm:text-lg px-8 sm:px-10 h-13 sm:h-15 shadow-md hover:shadow-xl transition-all hover:scale-105 border-2">
                     <a href="#features">Learn More</a>
                   </Button>
                 </motion.div>
 
                 {/* Social Proof Banner */}
-                <motion.div variants={fadeInUp} className="mt-6">
-                  <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-purple-500/5 to-primary/5 shadow-lg">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-center gap-2 flex-wrap">
-                        <TrendingUp className="h-5 w-5 text-primary flex-shrink-0" aria-hidden="true" />
-                        <p className="text-sm font-semibold text-center">
+                <motion.div variants={fadeInUp} className="mt-8">
+                  <Card className="border-primary/30 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 shadow-xl gradient-bg-animated">
+                    <CardContent className="p-5">
+                      <div className="flex items-center justify-center gap-3 flex-wrap">
+                        <TrendingUp className="h-6 w-6 text-primary flex-shrink-0" aria-hidden="true" />
+                        <p className="text-sm sm:text-base font-bold text-center">
                           <span className="text-primary">10,000+ views</span> delivered in{" "}
-                          <span className="text-purple-600">2 hours</span>!
+                          <span className="text-secondary">2 hours</span>!
                         </p>
-                        <Zap className="h-5 w-5 text-purple-600 animate-pulse flex-shrink-0" aria-hidden="true" />
+                        <Zap className="h-6 w-6 text-secondary animate-pulse flex-shrink-0" aria-hidden="true" />
                       </div>
                     </CardContent>
                   </Card>
                 </motion.div>
               </motion.div>
 
-              {/* Hero Image */}
+              {/* Hero Visual with Images */}
               <motion.div 
-                className="lg:order-2"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={mounted ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.6 }}
+                className="lg:order-2 relative"
+                initial={{ opacity: 0, x: 50 }}
+                animate={mounted ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
+                transition={{ duration: 0.8 }}
               >
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                  <img 
-                    src={heroImage} 
-                    alt="Social media growth - person using smartphone with social media engagement icons"
-                    className="w-full h-auto object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className="relative h-[400px] sm:h-[500px]">
+                  {/* Background gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-primary/20 rounded-3xl overflow-hidden">
+                    <img 
+                      src={heroBg} 
+                      alt="Digital marketing background"
+                      className="w-full h-full object-cover opacity-30 mix-blend-overlay"
+                    />
+                  </div>
+                  
+                  {/* Floating phone mockup */}
+                  <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 sm:w-80"
+                    animate={{
+                      y: [0, -15, 0],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <div className="relative">
+                      {/* Glow effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary blur-3xl opacity-40 rounded-full" />
+                      
+                      {/* Phone image */}
+                      <img 
+                        src={heroPhone} 
+                        alt="Social media app interface"
+                        className="relative z-10 w-full h-auto rounded-3xl shadow-2xl border-4 border-white/10"
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Floating stat cards */}
+                  <motion.div
+                    className="absolute top-8 right-4 glass p-4 rounded-2xl shadow-xl border border-border/50"
+                    animate={{
+                      y: [0, -10, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.2
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                        <TrendingUp className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold gradient-text">1M+</div>
+                        <div className="text-xs text-muted-foreground">Orders</div>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    className="absolute bottom-12 left-4 glass p-4 rounded-2xl shadow-xl border border-border/50"
+                    animate={{
+                      y: [0, -8, 0],
+                    }}
+                    transition={{
+                      duration: 3.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: 0.5
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center">
+                        <Star className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold gradient-text">99.9%</div>
+                        <div className="text-xs text-muted-foreground">Success</div>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
             </div>

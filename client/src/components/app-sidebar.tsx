@@ -53,12 +53,12 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-6">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-            <TrendingUp className="h-5 w-5 text-primary-foreground" />
+      <SidebarHeader className="p-6 border-b border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+            <TrendingUp className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-semibold">ReelBoost</span>
+          <span className="text-xl font-bold gradient-text">ReelBoost</span>
         </div>
       </SidebarHeader>
 
@@ -66,13 +66,13 @@ export function AppSidebar() {
         {/* Wallet Balance Widget */}
         {user && (
           <div className="px-6 pb-6">
-            <Card>
-              <CardContent className="p-4 space-y-2">
-                <div className="text-sm text-muted-foreground">Wallet Balance</div>
-                <div className="text-2xl font-semibold" data-testid="text-wallet-balance">
-                  ₹{parseFloat(user.walletBalance || "0").toFixed(2)}
+            <Card className="bg-gradient-to-br from-primary/10 via-secondary/5 to-primary/10 border-primary/20 shadow-lg">
+              <CardContent className="p-4 space-y-3">
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Wallet Balance</div>
+                <div className="text-3xl font-bold" data-testid="text-wallet-balance">
+                  ₹{Number(user.walletBalance || 0).toFixed(2)}
                 </div>
-                <Button asChild size="sm" className="w-full" data-testid="button-add-funds-sidebar">
+                <Button asChild size="sm" className="w-full bg-gradient-to-r from-primary to-secondary hover:scale-105 transition-all shadow-md" data-testid="button-add-funds-sidebar">
                   <Link href="/wallet">Add Funds</Link>
                 </Button>
               </CardContent>

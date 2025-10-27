@@ -60,29 +60,32 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 -z-10" />
+      
       <div className="w-full max-w-md space-y-8">
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-12 h-12 rounded-md bg-primary flex items-center justify-center">
-              <TrendingUp className="h-7 w-7 text-primary-foreground" />
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary via-primary to-secondary flex items-center justify-center shadow-xl">
+              <TrendingUp className="h-7 w-7 text-white" />
             </div>
-            <span className="text-3xl font-bold">ReelBoost</span>
+            <span className="text-3xl font-bold gradient-text">ReelBoost</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Create Account</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight">Create Account</h1>
+          <p className="text-muted-foreground text-lg">
             Start growing your social media presence
           </p>
         </div>
 
-        <Card className="shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Sign Up</CardTitle>
-            <CardDescription className="text-center">
+        <Card className="shadow-2xl border-border/50 backdrop-blur">
+          <CardHeader className="space-y-2 pb-6">
+            <CardTitle className="text-2xl text-center font-bold">Sign Up</CardTitle>
+            <CardDescription className="text-center text-base">
               Create your account to get started
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
@@ -162,7 +165,7 @@ export default function Signup() {
 
                 <Button 
                   type="submit" 
-                  className="w-full" 
+                  className="w-full bg-gradient-to-r from-primary to-secondary hover:scale-105 shadow-lg hover:shadow-xl transition-all" 
                   size="lg"
                   disabled={signupMutation.isPending}
                   data-testid="button-signup"
@@ -186,7 +189,7 @@ export default function Signup() {
             <Button 
               variant="outline" 
               size="lg" 
-              className="w-full"
+              className="w-full hover:scale-105 transition-all border-2"
               asChild
               data-testid="button-google-signup"
             >
@@ -214,7 +217,7 @@ export default function Signup() {
         </Card>
 
         <div className="text-center">
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="hover:scale-105 transition-all">
             <a href="/">← Back to Home</a>
           </Button>
         </div>

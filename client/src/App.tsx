@@ -111,11 +111,11 @@ function AppContent() {
       <div className="flex h-screen w-full">
         <AppSidebar />
         <div className="flex flex-col flex-1">
-          <header className="flex items-center justify-between p-4 border-b">
-            <SidebarTrigger data-testid="button-sidebar-toggle" />
+          <header className="flex items-center justify-between p-4 border-b border-border/50 glass-strong">
+            <SidebarTrigger data-testid="button-sidebar-toggle" className="hover:scale-110 transition-transform" />
             <ThemeToggle />
           </header>
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto bg-gradient-to-br from-background via-background to-primary/5">
             <div className="container mx-auto px-6 md:px-8 lg:px-12 py-8 max-w-7xl">
               <Router />
             </div>

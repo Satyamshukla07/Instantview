@@ -1,0 +1,85 @@
+1. Design Direction
+
+Give the site a sleek, futuristic, and minimal design style.
+
+Use soft shadows, rounded corners, glassmorphism or neumorphism elements subtly.
+
+Create a visually consistent color palette — use gradients, soft background hues, and modern accent colors (e.g., blue, violet, or teal tones).
+
+Use modern fonts like Inter, Poppins, or Manrope.
+
+Introduce micro-animations using Framer Motion for hover effects, transitions, and element entrances.
+
+2. Layout & Spacing
+
+Improve vertical and horizontal spacing — apply consistent margins and paddings.
+
+Add section separators with slight gradient or subtle background differences.
+
+Make sure all cards, inputs, and buttons follow a unified grid system.
+
+Create a balanced visual hierarchy using font sizes, weights, and color contrasts.
+
+3. Component-Level Improvements
+
+Navbar/Header:
+
+Make it fixed and semi-transparent with blur background (glassmorphism).
+
+Add hover animations for links and call-to-action button with gradient outline.
+
+If logo exists, ensure it scales well and matches the new theme.
+
+Hero Section:
+
+Make it full width with a clean headline, subtext, and a strong call-to-action button.
+
+Optionally add a modern abstract background pattern, gradient overlay, or animated illustration (e.g., Lottie or SVG).
+
+Cards/Sections:
+
+Redesign all cards with consistent style — rounded corners, soft shadows, hover scale/tilt effects.
+
+Use icons from Lucide React or Heroicons for visual cues.
+
+Buttons:
+
+Use gradient or subtle animated borders.
+
+Define primary, secondary, and outline button variants.
+
+Forms & Inputs:
+
+Apply modern minimalist styling with focus states and subtle border glow.
+
+Footer:
+
+Simplify, align properly, and add smooth hover effects.
+
+4. Animations & Transitions
+
+Use Framer Motion for smooth fade-ins, slides, and element entrance animations.
+
+Use hover-scale and gradient shifts for interactive elements.
+
+Animate page transitions (e.g., fade between pages).
+
+5. Responsive & Mobile Design
+
+Redesign the mobile navbar as a smooth animated menu drawer.
+
+Ensure every section adapts perfectly to mobile screen sizes.
+
+Optimize text size, padding, and tap areas for mobile.
+
+6. Finishing Touches
+
+Add smooth scroll and scroll-triggered animations.
+
+Replace all default UI with consistent theme-based components.
+
+Implement a light/dark mode toggle using Tailwind + Theme Provider.
+
+Optimize for performance and accessibility (A11y).
+
+Ensure the new look passes a modern design audit (color contrast, spacing, alignment, and typography).
