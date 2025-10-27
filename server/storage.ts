@@ -8,6 +8,7 @@ import type {
   InsertPaymentProof,
   InsertConsentLog,
 } from "@shared/schema";
+import { MemoryStorage } from "./memoryStorage";
 import type {
   User,
   Service,
@@ -362,5 +363,7 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Export storage instance
-export const storage = new DatabaseStorage();
+// Export storage instance - use MemoryStorage if MongoDB is not configured
+export const storage = process.env.MONGODB_URI 
+  ? new DatabaseStorage() 
+  : new MemoryStorage();
