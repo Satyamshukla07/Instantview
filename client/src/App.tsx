@@ -66,6 +66,8 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Dashboard} />
+          <Route path="/login">{() => { const [, setLocation] = useLocation(); setLocation("/dashboard"); return null; }}</Route>
+          <Route path="/signup">{() => { const [, setLocation] = useLocation(); setLocation("/dashboard"); return null; }}</Route>
           <Route path="/services" component={Services} />
           <Route path="/orders" component={Orders} />
           <Route path="/wallet" component={Wallet} />
